@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
-import { User } from '../models/index.js';
+import { PrismaClient } from '@prisma/client';
 import { generateToken } from '../utils/generateToken.js';
+
+const prisma = new PrismaClient();
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ where: { username } });
+  const user = await prisma.user.findUnique({ where: { username } });
   if (!user) {
     return res.status(400).json({ message: 'Invalid credentials' });
   }

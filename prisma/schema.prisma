@@ -1,0 +1,2444 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model access_card {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int    @db.UnsignedInt
+  code      String @db.VarChar(60)
+  date      String @db.VarChar(45)
+  current   Int    @default(1) @db.UnsignedTinyInt
+
+  @@index([worker_id], map: "fk_worker_card_worker1_idx")
+}
+
+model action {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id Int      @db.UnsignedInt
+  type         Int      @db.UnsignedTinyInt
+  amount       Int      @db.UnsignedInt
+  date         DateTime @db.Date
+
+  @@index([furniture_id], map: "fk_action_furniture1_idx")
+}
+
+model aksiya {
+  id                   Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id         Int      @db.UnsignedInt
+  amount               Int      @db.UnsignedInt
+  sale                 Decimal? @db.Decimal(5, 2)
+  cost                 Int?
+  magazin_id           Int?     @db.UnsignedInt
+  date                 DateTime @db.Date
+  created              DateTime @default(now()) @db.Timestamp(0)
+  updated              DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  material_position_id Int?     @db.UnsignedInt
+
+  @@index([magazin_id], map: "fk-aksiya-magazin_id")
+  @@index([furniture_id], map: "fk_aksiya_furniture1_idx")
+  @@index([material_position_id], map: "idx-aksiya-material_position_id")
+}
+
+model aksiya_end_product {
+  aksiya_id      Int    @db.UnsignedInt
+  end_product_id BigInt @db.UnsignedBigInt
+
+  @@id([aksiya_id, end_product_id])
+  @@index([aksiya_id], map: "fk_aksiya_has_end_product_aksiya1_idx")
+  @@index([end_product_id], map: "fk_aksiya_has_end_product_end_product1_idx")
+}
+
+model aliment {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  amount      Decimal  @db.Decimal(20, 2)
+  date        DateTime @db.Date
+  description String?  @db.Text
+
+  @@index([worker_id], map: "fk_aliment_worker_worker1_idx")
+}
+
+model app {
+  id   Int    @id @default(autoincrement()) @db.UnsignedInt
+  name String @db.VarChar(45)
+}
+
+model app_version {
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  app_id  Int     @db.UnsignedInt
+  version String  @db.VarChar(45)
+  info    String? @db.Text
+  url     String  @db.VarChar(255)
+
+  @@index([app_id], map: "fk_app_version_app1_idx")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model asd {
+  id      Int?
+  doc_no  String? @db.VarChar(8)
+  address String? @db.VarChar(79)
+  code    String? @db.VarChar(2)
+  sss     String? @db.VarChar(1)
+
+  @@ignore
+}
+
+model balance {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id Int      @db.UnsignedInt
+  amount       Int      @db.UnsignedInt
+  date         DateTime @db.Date
+
+  @@index([furniture_id], map: "fk_balance_furniture1_idx")
+}
+
+model block {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(30)
+  is_active Boolean @default(false)
+  sort      Int     @default(1000)
+}
+
+model bron_unique {
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  unique_id           Int      @db.UnsignedInt
+  amount              Int
+  magazin_id          Int?     @db.UnsignedInt
+  demand_furniture_id Int?     @db.UnsignedInt
+  by_whom             String?  @db.VarChar(255)
+  date                DateTime @db.Date
+  last_time           Int?
+  description         String   @db.Text
+  created             DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([demand_furniture_id], map: "demand_furniture_id_idx")
+  @@index([magazin_id], map: "magazin_id_idx")
+  @@index([unique_id], map: "unique_id_idx")
+}
+
+model business_logic {
+  id     Int      @id @default(autoincrement())
+  name   String?  @db.VarChar(255)
+  value  String?  @db.Text
+  status Boolean?
+}
+
+model cache {
+  key        String @id @db.VarChar(255)
+  value      String @db.MediumText
+  expiration Int
+}
+
+model cache_locks {
+  key        String @id @db.VarChar(255)
+  owner      String @db.VarChar(255)
+  expiration Int
+}
+
+model came_from {
+  id   Int     @id @default(autoincrement()) @db.UnsignedInt
+  name String? @db.VarChar(45)
+}
+
+model cashback {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id Int       @db.UnsignedInt
+  payment_id  Int       @db.UnsignedInt
+  amount      Int       @db.UnsignedInt
+  percent     Int       @default(1) @db.UnsignedSmallInt
+  date        DateTime  @db.Date
+  note        String?   @db.Text
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+  deleted_at  DateTime? @db.Timestamp(0)
+
+  @@index([customer_id], map: "cashback_customer_id_foreign")
+  @@index([payment_id], map: "cashback_payment_id_foreign")
+}
+
+model cashback_spends {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id Int       @db.UnsignedInt
+  demand_id   Int       @db.UnsignedInt
+  amount      Int       @db.UnsignedInt
+  date        DateTime  @db.Date
+  note        String?   @db.Text
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+  deleted_at  DateTime? @db.Timestamp(0)
+
+  @@index([customer_id], map: "cashback_spends_customer_id_foreign")
+  @@index([demand_id], map: "cashback_spends_demand_id_foreign")
+}
+
+model category_furniture {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  main_category_id  Int       @db.UnsignedInt
+  name              String    @db.VarChar(45)
+  text_for_document String    @db.VarChar(60)
+  sorder            Int       @default(1000)
+  active            Boolean   @default(false)
+  name_uz           String?   @db.VarChar(255)
+  name_ru           String?   @db.VarChar(255)
+  name_en           String?   @db.VarChar(255)
+  description_uz    String?   @db.Text
+  description_ru    String?   @db.Text
+  description_en    String?   @db.Text
+  in_mobile         Boolean   @default(true)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+  deleted_at        DateTime? @db.Timestamp(0)
+
+  @@index([main_category_id], map: "fk_categoryFurniture_mainCategory1_idx")
+}
+
+model category_seh {
+  id                  Int     @id @default(autoincrement()) @db.UnsignedInt
+  name                String  @unique(map: "name") @db.VarChar(255)
+  active              Boolean @default(true)
+  sorder              Int     @default(1000) @db.UnsignedInt
+  short_for_readiness String  @db.VarChar(20)
+}
+
+model change_unique {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  from_unique_id Int      @db.UnsignedInt
+  to_unique_id   Int      @db.UnsignedInt
+  amount         Int      @db.UnsignedInt
+  date           DateTime @db.Date
+
+  @@index([from_unique_id], map: "fk_change_unique_unique1")
+  @@index([to_unique_id], map: "fk_change_unique_unique2")
+}
+
+model color {
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  name    String? @db.VarChar(150)
+  no      Int?    @unique(map: "no") @db.UnsignedSmallInt
+  sorder  Int?    @default(1000)
+  checked Int     @default(0) @db.TinyInt
+}
+
+model company {
+  id   Int    @id @default(autoincrement()) @db.UnsignedInt
+  name String @db.VarChar(100)
+}
+
+model customer {
+  id                 Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id            BigInt?   @db.UnsignedBigInt
+  name               String?   @db.VarChar(45)
+  phone              String?   @db.VarChar(45)
+  phone1             String?   @db.VarChar(45)
+  phone2             String?   @db.VarChar(45)
+  address            String?   @db.Text
+  uniquen            String?   @db.VarChar(30)
+  customer_status_id Int?      @db.UnsignedTinyInt
+  about              String?   @db.Text
+  birth_date         DateTime? @db.Date
+  email              String?   @db.VarChar(60)
+  created            DateTime  @default(now()) @db.Timestamp(0)
+  updated            DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([user_id], map: "customer_user_id_foreign")
+  @@index([customer_status_id], map: "idx-customer-customer_status_id")
+  @@fulltext([name, uniquen, phone, about, address, email], map: "all_info")
+}
+
+model customer2 {
+  id                 Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id            BigInt?   @db.UnsignedBigInt
+  name               String?   @db.VarChar(45)
+  phone              String?   @db.VarChar(45)
+  phone1             String?   @db.VarChar(45)
+  phone2             String?   @db.VarChar(45)
+  address            String?   @db.Text
+  uniquen            String?   @db.VarChar(30)
+  customer_status_id Int?      @db.UnsignedTinyInt
+  about              String?   @db.Text
+  birth_date         DateTime? @db.Date
+  email              String?   @db.VarChar(60)
+  created            DateTime  @default(now()) @db.Timestamp(0)
+  updated            DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([user_id], map: "customer_user_id_foreign")
+  @@index([customer_status_id], map: "idx-customer-customer_status_id")
+  @@fulltext([name, uniquen, phone, about, address, email], map: "all_info")
+}
+
+model customer_discount {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id Int       @unique(map: "customer_discount_customer_id_unique") @db.UnsignedInt
+  amount      BigInt    @db.UnsignedBigInt
+  percent     Int       @db.UnsignedInt
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+}
+
+model customer_relation {
+  id           Int     @id @default(autoincrement())
+  customer_id  Int     @db.UnsignedInt
+  customer_id2 Int     @db.UnsignedInt
+  relation     String? @db.VarChar(60)
+  description  String? @db.Text
+
+  @@index([customer_id], map: "idx-customer_relation-customer_id")
+  @@index([customer_id2], map: "idx-customer_relation-customer_id2")
+}
+
+model customer_status {
+  id   Int    @id @default(autoincrement()) @db.UnsignedTinyInt
+  name String @unique(map: "name") @db.VarChar(60)
+}
+
+model davomat {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  seller_id Int       @db.UnsignedInt
+  hour      Int?      @db.UnsignedTinyInt
+  date      DateTime  @db.Date
+  time_from DateTime? @db.DateTime(0)
+  time_to   DateTime? @db.DateTime(0)
+}
+
+model dayoff {
+  id      Int      @id @default(autoincrement()) @db.UnsignedInt
+  date    DateTime @unique(map: "date_UNIQUE") @db.Date
+  dept_id Int?     @db.UnsignedInt
+
+  @@index([dept_id], map: "fk_dayoff_dept1_idx")
+}
+
+model demand {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id    Int       @db.UnsignedInt
+  seller_id     Int       @db.UnsignedInt
+  seller_id1    Int?      @db.UnsignedInt
+  customer_id   Int       @db.UnsignedInt
+  taxlil_id     Int       @db.UnsignedInt
+  came_from_id  Int       @db.UnsignedInt
+  time_from     String?   @db.VarChar(5)
+  time_to       String?   @db.VarChar(5)
+  date          DateTime? @default(now()) @db.Timestamp(0)
+  vipusk_date   DateTime? @db.Date
+  description   String?   @db.Text
+  fixture_id    Int?
+  doc_no        String?   @db.VarChar(11)
+  contract_no   String?   @db.VarChar(100)
+  kurs          Int?
+  delivery_date DateTime? @db.Date
+  is_delivery   Boolean?
+  is_assembly   Boolean?
+  is_approved   Boolean   @default(false)
+  is_come_back  Boolean   @default(false)
+  is_vitrina    Boolean   @default(false)
+  address       String?   @db.Text
+  add_sale      Int       @default(0)
+  seller_rating Boolean?
+  closed        Boolean   @default(false)
+  created       DateTime  @default(now()) @db.Timestamp(0)
+  updated       DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  edit_date     DateTime? @db.Timestamp(0)
+  watch_status  Boolean?
+  region_id     Int?      @db.UnsignedInt
+
+  @@index([came_from_id], map: "fk_demand_cameFrom1_idx")
+  @@index([customer_id], map: "fk_demand_customer1_idx")
+  @@index([magazin_id], map: "fk_demand_magazin1_idx")
+  @@index([seller_id], map: "fk_demand_seller1_idx")
+  @@index([seller_id1], map: "fk_demand_seller2_idx")
+  @@index([taxlil_id], map: "fk_demand_taxlil1_idx")
+}
+
+model demand2 {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id    Int       @db.UnsignedInt
+  seller_id     Int       @db.UnsignedInt
+  seller_id1    Int?      @db.UnsignedInt
+  customer_id   Int       @db.UnsignedInt
+  taxlil_id     Int       @db.UnsignedInt
+  came_from_id  Int       @db.UnsignedInt
+  time_from     String?   @db.VarChar(5)
+  time_to       String?   @db.VarChar(5)
+  date          DateTime? @default(now()) @db.Timestamp(0)
+  vipusk_date   DateTime? @db.Date
+  description   String?   @db.Text
+  fixture_id    Int?
+  doc_no        String?   @db.VarChar(11)
+  contract_no   String?   @db.VarChar(100)
+  kurs          Int?
+  delivery_date DateTime? @db.Date
+  is_delivery   Boolean?
+  is_assembly   Boolean?
+  is_approved   Boolean   @default(false)
+  is_come_back  Boolean   @default(false)
+  is_vitrina    Boolean   @default(false)
+  address       String?   @db.Text
+  add_sale      Int       @default(0)
+  seller_rating Boolean?
+  closed        Boolean   @default(false)
+  created       DateTime  @default(now()) @db.Timestamp(0)
+  updated       DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  edit_date     DateTime? @db.Timestamp(0)
+  watch_status  Boolean?
+  region_id     Int?      @db.UnsignedInt
+
+  @@index([came_from_id], map: "fk_demand_cameFrom1_idx")
+  @@index([customer_id], map: "fk_demand_customer1_idx")
+  @@index([magazin_id], map: "fk_demand_magazin1_idx")
+  @@index([seller_id], map: "fk_demand_seller1_idx")
+  @@index([seller_id1], map: "fk_demand_seller2_idx")
+  @@index([taxlil_id], map: "fk_demand_taxlil1_idx")
+}
+
+model demand_furniture {
+  id                   Int      @id @default(autoincrement()) @db.UnsignedInt
+  demand_id            Int      @db.UnsignedInt
+  furniture_id         Int?     @db.UnsignedInt
+  unique_id            Int?     @db.UnsignedInt
+  material_position_id Int?     @db.UnsignedInt
+  is_custom            Boolean  @default(false)
+  name                 String?  @db.VarChar(255)
+  description          String?  @db.Text
+  amount               Int      @default(1) @db.UnsignedInt
+  from_vitrina         Int?
+  cost                 Decimal? @db.Decimal(20, 2)
+  selling_cost         Decimal? @db.Decimal(20, 2)
+  material_ids         String?  @db.Text
+  color_id             Int?     @db.UnsignedInt
+  handle_id            Int?     @db.UnsignedSmallInt
+  mechanism_id         Int?     @db.UnsignedSmallInt
+  has_glass            Int      @default(0) @db.TinyInt
+  has_drawing          Boolean  @default(false)
+  cancelled            Boolean  @default(false)
+  fixture_id           Int?
+  bron_magazin_id      Int?     @db.UnsignedInt
+  tree_id              Int?     @db.UnsignedInt
+  shpon_id             Int?
+  aksiya_id            Int?     @db.UnsignedInt
+  sharnir              String?  @db.Text
+
+  @@index([color_id], map: "fk_demand_furniture_color1_idx")
+  @@index([demand_id], map: "fk_demand_furniture_demand1_idx")
+  @@index([furniture_id], map: "fk_demand_furniture_furniture1_idx")
+  @@index([handle_id], map: "fk_demand_furniture_handle1_idx")
+  @@index([mechanism_id], map: "fk_demand_furniture_mechanism1_idx")
+  @@index([unique_id], map: "fk_demand_furniture_unique_1")
+  @@index([aksiya_id], map: "idx-demand_furniture-aksiya_id")
+  @@index([bron_magazin_id], map: "idx-demand_furniture-bron_magazin_id")
+  @@index([material_position_id], map: "idx-demand_furniture-material_position_id")
+  @@index([tree_id], map: "idx-demand_furniture-tree_id")
+}
+
+model demand_furniture_end_product {
+  demand_furniture_id Int    @db.UnsignedInt
+  end_product_id      BigInt @db.UnsignedBigInt
+
+  @@id([demand_furniture_id, end_product_id])
+  @@index([demand_furniture_id], map: "fk_demand_furniture_end_product_demand_furniture1_idx")
+  @@index([end_product_id], map: "fk_demand_furniture_end_product_end_product1_idx")
+}
+
+model demand_permission {
+  id        Int  @id @default(autoincrement())
+  user_id   Int
+  demand_id Int
+  status    Int? @default(0)
+}
+
+model dept {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  type      dept_type @default(worker)
+  name      String    @db.VarChar(150)
+  sorder    Int       @default(1000)
+  parent_id Int?      @db.UnsignedInt
+  seh_id    Int?      @db.UnsignedInt
+
+  @@unique([name, type, parent_id], map: "name_type_parent_id_UNIQUE")
+  @@index([seh_id], map: "fk_otdel_seh1_idx")
+}
+
+model discounts {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  amount     BigInt    @db.UnsignedBigInt
+  percent    Int       @db.UnsignedInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+
+  @@unique([amount, percent], map: "discounts_amount_percent_unique")
+}
+
+model driver {
+  id   Int     @id @default(autoincrement()) @db.UnsignedInt
+  name String? @db.VarChar(45)
+}
+
+model end_product {
+  id                   BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  furniture_id         Int      @db.UnsignedInt
+  color_id             Int?     @db.UnsignedInt
+  handle_id            Int?     @db.UnsignedSmallInt
+  mechanism_id         Int?     @db.UnsignedSmallInt
+  material_position_id Int?     @db.UnsignedInt
+  material_ids         String?  @db.VarChar(109)
+  tree_id              Int?     @db.UnsignedInt
+  has_glass            String?  @db.Text
+  cost                 Decimal? @db.Decimal(20, 2)
+  description          String?  @db.Text
+  demand_furniture_id  Int?     @db.UnsignedInt
+
+  @@index([furniture_id], map: "fk_end_product_furniture1_idx")
+  @@index([demand_furniture_id], map: "idx-end_product-demand_furniture_id")
+}
+
+model end_product_packing {
+  id             Int     @id @default(autoincrement()) @db.UnsignedInt
+  end_product_id BigInt  @db.UnsignedBigInt
+  packing_id     Int     @db.UnsignedInt
+  name           String  @db.VarChar(255)
+  status         Boolean @default(false)
+}
+
+model experience_percent {
+  id        Int @id @default(autoincrement()) @db.UnsignedInt
+  from_year Int
+  to_year   Int
+  amount    Int
+}
+
+model expire_smile {
+  id          Int @id @default(autoincrement())
+  demand_id   Int @db.UnsignedInt
+  expire_time Int
+  closed      Int
+
+  @@index([demand_id], map: "idx-expire_smile-demand_id")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model fixture {
+  id      Int      @id @default(autoincrement())
+  name    String   @db.VarChar(255)
+  params  String?  @db.Text
+  created DateTime @default(now()) @db.Timestamp(0)
+}
+
+model furniture {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  category_id       Int       @db.UnsignedInt
+  tip_id            Int?      @db.UnsignedInt
+  name              String?   @db.VarChar(100)
+  position          Int       @default(0) @db.UnsignedInt
+  is_glass          Int       @default(0)
+  is_custom         Boolean   @default(false)
+  furniture_id      Int?      @db.UnsignedInt
+  custom_status     Int       @default(0) @db.UnsignedTinyInt
+  size              String    @db.VarChar(100)
+  active            Boolean   @default(false)
+  min_photo         String?   @db.VarChar(255)
+  furniture_type_id Int?      @db.UnsignedInt
+  name_uz           String?   @db.VarChar(255)
+  name_ru           String?   @db.VarChar(255)
+  name_en           String?   @db.VarChar(255)
+  description_uz    String?   @db.Text
+  description_ru    String?   @db.Text
+  description_en    String?   @db.Text
+  in_mobile         Boolean   @default(true)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+  deleted_at        DateTime? @db.Timestamp(0)
+
+  @@index([category_id], map: "fk_furniture_categoryFurniture1_idx")
+  @@index([tip_id], map: "fk_furniture_tip1_idx")
+  @@index([furniture_id], map: "idx-furniture-furniture_id")
+  @@index([furniture_type_id], map: "idx-furniture-furniture_type_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model furniture_color {
+  id           Int @db.UnsignedInt
+  furniture_id Int @db.UnsignedInt
+  color_id     Int @db.UnsignedInt
+
+  @@index([color_id], map: "fk_furniture_has_color_color1_idx")
+  @@index([furniture_id], map: "fk_furniture_has_color_furniture1_idx")
+  @@ignore
+}
+
+model furniture_seh {
+  id              Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id    Int      @db.UnsignedInt
+  category_seh_id Int?     @db.UnsignedInt
+  seh_id          Int?     @db.UnsignedInt
+  order           String?  @db.VarChar(30)
+  cost            Decimal? @db.Decimal(20, 2)
+  time            Decimal? @db.Decimal(20, 10)
+  parent          String?  @db.VarChar(30)
+
+  @@index([category_seh_id], map: "fk_furniture_seh_category_seh1_idx")
+  @@index([furniture_id], map: "fk_furniture_seh_furniture1_idx")
+  @@index([seh_id], map: "fk_furniture_seh_seh1_idx")
+}
+
+model furniture_type {
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  name   String  @unique(map: "name") @db.VarChar(255)
+  icon   String? @db.VarChar(255)
+  sorder Int     @default(1000) @db.SmallInt
+}
+
+model good_categories {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name             String    @unique(map: "good_categories_name_unique") @db.VarChar(200)
+  unit_id          BigInt    @db.UnsignedBigInt
+  purchase_unit_id BigInt    @db.UnsignedBigInt
+  note             String?   @db.Text
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+
+  @@index([purchase_unit_id], map: "good_categories_purchase_unit_id_foreign")
+  @@index([unit_id], map: "good_categories_unit_id_foreign")
+}
+
+model good_receipts {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  date       DateTime  @db.Date
+  good_id    BigInt    @db.UnsignedBigInt
+  amount     Decimal   @default(0.00) @db.Decimal(20, 2)
+  unit_ratio Decimal   @default(1.00) @db.Decimal(10, 2)
+  cost       Decimal?  @db.Decimal(10, 2)
+  note       String?   @db.Text
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  @@index([good_id], map: "good_receipts_good_id_foreign")
+}
+
+model good_transfers {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  date       DateTime  @db.Date
+  seh_id     Int       @db.UnsignedInt
+  good_id    BigInt    @db.UnsignedBigInt
+  amount     Decimal   @default(0.00) @db.Decimal(20, 2)
+  cost       Decimal?  @db.Decimal(10, 2)
+  note       String?   @db.Text
+  received   Boolean   @default(false)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  @@index([good_id], map: "good_transfers_good_id_foreign")
+  @@index([seh_id], map: "good_transfers_seh_id_foreign")
+}
+
+model goods {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  good_category_id BigInt    @db.UnsignedBigInt
+  name             String    @unique(map: "goods_name_unique") @db.VarChar(255)
+  unit_id          BigInt    @db.UnsignedBigInt
+  purchase_unit_id BigInt    @db.UnsignedBigInt
+  unit_ratio       Decimal   @default(1.00) @db.Decimal(10, 2)
+  note             String?   @db.Text
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+  deleted_at       DateTime? @db.Timestamp(0)
+  row_index        BigInt?   @db.UnsignedBigInt
+
+  @@index([good_category_id], map: "goods_good_category_id_foreign")
+  @@index([purchase_unit_id], map: "goods_purchase_unit_id_foreign")
+  @@index([unit_id], map: "goods_unit_id_foreign")
+}
+
+model handle {
+  id          Int    @id @default(autoincrement()) @db.UnsignedSmallInt
+  name        String @unique(map: "name_UNIQUE") @db.VarChar(255)
+  description String @db.Text
+  sorder      Int    @default(1001) @db.UnsignedInt
+}
+
+model holiday {
+  id   Int      @id @default(autoincrement()) @db.UnsignedSmallInt
+  date DateTime @db.Date
+}
+
+model in_out {
+  id     Int       @id @default(autoincrement()) @db.UnsignedInt
+  cardId String    @db.VarChar(45)
+  is_in  Int       @default(1)
+  time   DateTime? @db.DateTime(0)
+}
+
+model injury {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int       @db.UnsignedInt
+  date_begin  DateTime  @db.Date
+  date_end    DateTime? @db.Date
+  amount      Decimal?  @db.Decimal(20, 2)
+  description String?   @db.Text
+
+  @@index([worker_id], map: "fk_travma_worker1_idx")
+}
+
+model insalubrity {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  date      DateTime @db.Date
+  amount    Decimal  @db.Decimal(20, 2)
+
+  @@index([worker_id], map: "fk_vrednost_worker1_idx")
+}
+
+model ish_norma {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  seller_id Int?     @db.UnsignedInt
+  hour      Int      @db.UnsignedTinyInt
+  date      DateTime @db.Date
+}
+
+model job_batches {
+  id             String  @id @db.VarChar(255)
+  name           String  @db.VarChar(255)
+  total_jobs     Int
+  pending_jobs   Int
+  failed_jobs    Int
+  failed_job_ids String  @db.LongText
+  options        String? @db.MediumText
+  cancelled_at   Int?
+  created_at     Int
+  finished_at    Int?
+}
+
+model jobs {
+  id           BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  queue        String @db.VarChar(255)
+  payload      String @db.LongText
+  attempts     Int    @db.UnsignedTinyInt
+  reserved_at  Int?   @db.UnsignedInt
+  available_at Int    @db.UnsignedInt
+  created_at   Int    @db.UnsignedInt
+
+  @@index([queue], map: "jobs_queue_index")
+}
+
+model komplekt {
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  category_id         Int       @db.UnsignedInt
+  name                String    @db.VarChar(100)
+  active              Boolean   @default(false)
+  name_uz             String?   @db.VarChar(255)
+  name_ru             String?   @db.VarChar(255)
+  name_en             String?   @db.VarChar(255)
+  description_uz      String?   @db.Text
+  description_ru      String?   @db.Text
+  description_en      String?   @db.Text
+  youtube_video_id    String?   @db.VarChar(20)
+  youtube_video_url   String?   @db.VarChar(100)
+  instagram_video_url String?   @db.VarChar(100)
+  in_mobile           Boolean   @default(true)
+  created_at          DateTime? @db.Timestamp(0)
+  updated_at          DateTime? @db.Timestamp(0)
+  deleted_at          DateTime? @db.Timestamp(0)
+
+  @@unique([name, category_id], map: "name_category_id_UNIQUE")
+  @@index([category_id], map: "fk_komplekt_categoryFurniture1_idx")
+}
+
+model komplekt_furniture {
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  komplekt_id  Int       @db.UnsignedInt
+  furniture_id Int       @db.UnsignedInt
+  amount       Int
+  active       Boolean   @default(false)
+  position     Int?
+  in_mobile    Boolean   @default(true)
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+  deleted_at   DateTime? @db.Timestamp(0)
+  not_archived Int?
+
+  @@unique([furniture_id, not_archived], map: "komplekt_furniture_furniture_id_not_archived_unique")
+  @@index([furniture_id], map: "fk_komplekt_furniture_furniture1_idx")
+  @@index([komplekt_id], map: "fk_komplekt_furniture_komplekt1_idx")
+}
+
+model kurs {
+  id      Int      @id @default(autoincrement()) @db.UnsignedInt
+  sum     Decimal  @db.Decimal(20, 2)
+  dollar  Decimal  @db.Decimal(20, 2)
+  date    DateTime @db.Date
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @db.DateTime(0)
+}
+
+model kurs_inner {
+  id      Int      @id @default(autoincrement()) @db.UnsignedInt
+  sum     Decimal  @db.Decimal(20, 2)
+  dollar  Decimal  @db.Decimal(20, 2)
+  date    DateTime @db.Date
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @db.DateTime(0)
+}
+
+model magazin {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  region_id   Int?    @db.UnsignedInt
+  name        String  @db.VarChar(45)
+  phone       String  @db.VarChar(100)
+  sorder      Int?    @default(1000)
+  in_mobile   Int     @default(0) @db.UnsignedTinyInt
+  name_uz     String  @db.VarChar(255)
+  name_ru     String? @db.VarChar(255)
+  name_en     String? @db.VarChar(255)
+  has_parking Int     @default(1) @db.UnsignedTinyInt
+  open_hours  Json?
+  address     Json?
+  landmark    Json?
+  location    Json?
+  lat_long    String? @db.VarChar(70)
+
+  @@index([region_id], map: "magazin_region_id_foreign")
+}
+
+model main_category {
+  id     Int    @id @default(autoincrement()) @db.UnsignedInt
+  name   String @db.VarChar(100)
+  sorder Int?   @default(1000)
+}
+
+model map {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id Int      @db.UnsignedInt
+  version      String   @db.VarChar(10)
+  description  String   @db.Text
+  actual       Boolean  @default(false)
+  parent_id    Int      @default(0) @db.UnsignedInt
+  is_custom    Boolean  @default(false)
+  cost         Decimal? @db.Decimal(20, 10)
+
+  @@unique([furniture_id, version], map: "furniture_id_unique_version")
+  @@index([furniture_id], map: "fk_map_furniture1_idx")
+}
+
+model material {
+  id                   Int     @id @default(autoincrement()) @db.UnsignedInt
+  material_position_id Int     @db.UnsignedInt
+  code                 String? @db.VarChar(100)
+  name                 String? @db.VarChar(255)
+  description          String? @db.Text
+  checked              Int     @default(0) @db.TinyInt
+
+  @@index([material_position_id], map: "fk_material_material_position1_idx")
+}
+
+model material_position {
+  id   Int    @id @default(autoincrement()) @db.UnsignedInt
+  name String @db.VarChar(255)
+}
+
+model mb_actions {
+  id          Int                  @id @default(autoincrement())
+  title       String?              @db.Text
+  description String?              @db.Text
+  created_at  DateTime?            @default(now()) @db.DateTime(0)
+  updated_at  DateTime?            @default(now()) @db.DateTime(0)
+  enabled     Int?                 @default(1)
+  start_date  String?              @db.MediumText
+  end_date    String?              @db.MediumText
+  category    mb_actions_category?
+  file_name   String?              @db.Text
+}
+
+model mb_app_version {
+  id         Int       @id @default(autoincrement())
+  version    Int?
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_category {
+  id          Int       @id @default(autoincrement())
+  category_id Int?
+  position    Int?
+  enabled     Int?      @default(1)
+  image       String?   @db.Text
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_feedback {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  category_id Int?
+  subject     String?   @db.Text
+  message     String?   @db.Text
+  score       Float?
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_feedback_category {
+  id      Int     @id @default(autoincrement())
+  name_uz String? @db.VarChar(100)
+  name_en String? @db.VarChar(100)
+  name_ru String? @db.VarChar(100)
+}
+
+model mb_furniture {
+  id           Int       @id @default(autoincrement())
+  furniture_id Int?
+  description  String?   @db.Text
+  materials    String?   @db.Text
+  handmade     String?   @db.Text
+  size         String?   @db.Text
+  delivery     String?   @db.Text
+  position     Int?
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_furniture_file {
+  id           Int       @id @default(autoincrement())
+  furniture_id Int?
+  image        String?   @db.Text
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_language {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  mobile_type String?   @db.VarChar(10)
+  lang        String?   @db.VarChar(10)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_like_count {
+  id           Int  @id @default(autoincrement())
+  furniture_id Int?
+  count        Int?
+}
+
+model mb_like_dislike {
+  id           Int       @id @default(autoincrement())
+  furniture_id Int?
+  user_id      Int?
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_notification {
+  id         Int       @id @default(autoincrement())
+  title      String?   @db.Text
+  body       String?   @db.Text
+  type       String?   @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  enabled    Int?
+}
+
+model mb_push_history {
+  id          Int       @id @default(autoincrement())
+  token       String?   @db.Text
+  title       String?   @db.Text
+  description String?   @db.Text
+  payload     String?   @db.Text
+  type        String?   @db.VarChar(10)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+  is_seen     Int?      @default(0)
+}
+
+model mb_push_task {
+  id         Int                  @id @default(autoincrement())
+  token      String?              @db.Text
+  body       String?              @db.Text
+  status     mb_push_task_status? @default(P)
+  created_at DateTime?            @default(now()) @db.DateTime(0)
+  updated_at DateTime?            @default(now()) @db.DateTime(0)
+}
+
+model mb_push_token {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  token       String?   @db.Text
+  mobile_type String?   @db.VarChar(10)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_top_item {
+  id           Int       @id @default(autoincrement())
+  furniture_id Int?      @unique(map: "mb_top_set_furniture_id_uindex")
+  position     Int?
+  enabled      Int?      @default(1)
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_top_set {
+  id         Int       @id @default(autoincrement())
+  set_id     Int?      @unique(map: "mb_top_set_set_id_uindex")
+  position   Int?
+  enabled    Int?      @default(1)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mb_user_file {
+  id         Int       @id @default(autoincrement())
+  user_id    Int?
+  image      String?   @db.Text
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+}
+
+model mechanism {
+  id          Int    @id @default(autoincrement()) @db.UnsignedSmallInt
+  name        String @unique(map: "name_UNIQUE") @db.VarChar(255)
+  description String @db.Text
+  sorder      Int    @default(1001) @db.UnsignedSmallInt
+}
+
+model media {
+  id                    BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  model_type            String    @db.VarChar(255)
+  model_id              BigInt    @db.UnsignedBigInt
+  uuid                  String?   @unique(map: "media_uuid_unique") @db.Char(36)
+  collection_name       String    @db.VarChar(255)
+  name                  String    @db.VarChar(255)
+  file_name             String    @db.VarChar(255)
+  mime_type             String?   @db.VarChar(255)
+  disk                  String    @db.VarChar(255)
+  conversions_disk      String?   @db.VarChar(255)
+  size                  BigInt    @db.UnsignedBigInt
+  manipulations         Json
+  custom_properties     Json
+  generated_conversions Json
+  responsive_images     Json
+  order_column          Int?      @db.UnsignedInt
+  created_at            DateTime? @db.Timestamp(0)
+  updated_at            DateTime? @db.Timestamp(0)
+
+  @@index([model_type, model_id], map: "media_model_type_model_id_index")
+  @@index([order_column], map: "media_order_column_index")
+}
+
+model menu {
+  id           Int     @id @default(autoincrement()) @db.UnsignedInt
+  role_id      Int     @db.UnsignedInt
+  parent_id    Int     @default(0) @db.UnsignedInt
+  name         String? @db.VarChar(255)
+  page_id      Int?    @db.UnsignedInt
+  link         String? @db.VarChar(255)
+  sorder       Int     @default(1000) @db.UnsignedInt
+  target_blank Boolean @default(false)
+  status       Boolean
+  icon         String  @db.VarChar(45)
+  icon2        String  @db.VarChar(45)
+
+  @@index([role_id], map: "fk_menu_role1_idx")
+}
+
+model migration {
+  version    String @id @db.VarChar(180)
+  apply_time Int?
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model model_has_permissions {
+  permission_id BigInt @db.UnsignedBigInt
+  model_type    String @db.VarChar(255)
+  model_id      BigInt @db.UnsignedBigInt
+
+  @@id([permission_id, model_id, model_type])
+  @@index([model_id, model_type], map: "model_has_permissions_model_id_model_type_index")
+}
+
+model model_has_roles {
+  role_id    BigInt @db.UnsignedBigInt
+  model_type String @db.VarChar(255)
+  model_id   BigInt @db.UnsignedBigInt
+
+  @@id([role_id, model_id, model_type])
+  @@index([model_id, model_type], map: "model_has_roles_model_id_model_type_index")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model models_history {
+  id            BigInt    @id @default(autoincrement())
+  ip            String?   @db.VarChar(50)
+  tbl           String    @db.VarChar(60)
+  pk            Int
+  action        Int       @db.SmallInt
+  attributes    String    @db.Text
+  createdAt     DateTime  @default(now()) @db.Timestamp(0)
+  created       DateTime? @db.Timestamp(0)
+  parent        String    @db.VarChar(60)
+  parentId      Int       @default(0)
+  user_id       Int       @default(0) @db.UnsignedInt
+  parentCreated DateTime? @db.Timestamp(0)
+
+  @@index([tbl], map: "models_history_model_class_index")
+}
+
+model money {
+  id     Int    @id @default(autoincrement()) @db.UnsignedInt
+  name   String @db.VarChar(45)
+  sorder Int?   @default(1000)
+}
+
+model month_days {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  dept_id   Int?     @db.UnsignedInt
+  worker_id Int?     @db.UnsignedInt
+  month     DateTime @db.Date
+  amount    Int
+
+  @@index([dept_id], map: "fk_month_days_dept1_idx")
+  @@index([worker_id], map: "fk_month_days_worker1_idx")
+}
+
+model mysql_setting {
+  id    Int     @id @default(autoincrement()) @db.TinyInt
+  name  String  @unique(map: "name") @db.VarChar(45)
+  value String? @db.VarChar(30)
+}
+
+model notif {
+  id       Int        @id @default(autoincrement()) @db.UnsignedInt
+  type     notif_type
+  title    String     @db.VarChar(100)
+  text     String     @db.Text
+  time     DateTime   @db.DateTime(0)
+  active   Boolean
+  created  DateTime   @default(now()) @db.Timestamp(0)
+  updated  DateTime   @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  table    String?    @db.VarChar(25)
+  table_id Int?
+}
+
+model notif_user {
+  id       Int       @id @default(autoincrement()) @db.UnsignedInt
+  notif_id Int       @db.UnsignedInt
+  user_id  Int       @db.UnsignedInt
+  status   Int       @db.TinyInt
+  seen     DateTime? @db.DateTime(0)
+  note     String    @db.Text
+
+  @@index([user_id], map: "notif_id_user_id_fk")
+  @@index([notif_id], map: "notif_user_notif_id_fk")
+}
+
+model oauth_access_tokens {
+  id         String    @id @db.VarChar(100)
+  user_id    BigInt?   @db.UnsignedBigInt
+  client_id  BigInt    @db.UnsignedBigInt
+  name       String?   @db.VarChar(255)
+  scopes     String?   @db.Text
+  revoked    Boolean
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  expires_at DateTime? @db.DateTime(0)
+
+  @@index([user_id], map: "oauth_access_tokens_user_id_index")
+}
+
+model oauth_auth_codes {
+  id         String    @id @db.VarChar(100)
+  user_id    BigInt    @db.UnsignedBigInt
+  client_id  BigInt    @db.UnsignedBigInt
+  scopes     String?   @db.Text
+  revoked    Boolean
+  expires_at DateTime? @db.DateTime(0)
+
+  @@index([user_id], map: "oauth_auth_codes_user_id_index")
+}
+
+model oauth_clients {
+  id                     BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id                BigInt?   @db.UnsignedBigInt
+  name                   String    @db.VarChar(255)
+  secret                 String?   @db.VarChar(100)
+  provider               String?   @db.VarChar(255)
+  redirect               String    @db.Text
+  personal_access_client Boolean
+  password_client        Boolean
+  revoked                Boolean
+  created_at             DateTime? @db.Timestamp(0)
+  updated_at             DateTime? @db.Timestamp(0)
+
+  @@index([user_id], map: "oauth_clients_user_id_index")
+}
+
+model oauth_personal_access_clients {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  client_id  BigInt    @db.UnsignedBigInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model oauth_refresh_tokens {
+  id              String    @id @db.VarChar(100)
+  access_token_id String    @db.VarChar(100)
+  revoked         Boolean
+  expires_at      DateTime? @db.DateTime(0)
+
+  @@index([access_token_id], map: "oauth_refresh_tokens_access_token_id_index")
+}
+
+model ostatok_correction {
+  id          Int       @id @default(autoincrement())
+  unique_id   Int
+  amount      Int?
+  date        DateTime? @db.Date
+  description String?   @db.Text
+  created     DateTime? @default(now()) @db.DateTime(0)
+  updated     DateTime? @db.DateTime(0)
+
+  @@index([unique_id], map: "idx-ostatok_correction-unique_id")
+}
+
+model ostatok_furniture {
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id         Int       @db.UnsignedInt
+  unique_id            Int?      @db.UnsignedInt
+  block_id             Int?
+  demand_furniture_id  Int?      @db.UnsignedInt
+  amount               Int
+  date                 DateTime? @db.Date
+  material_position_id Int?
+  description          String?   @db.Text
+  age                  DateTime? @db.Date
+  defect               String?   @db.Text
+  uniquen              String?   @db.VarChar(10)
+
+  @@index([demand_furniture_id], map: "fk_ostatokFurniture_demand_furniture1_idx")
+  @@index([furniture_id], map: "fk_ostatokFurniture_furniture1_idx")
+  @@index([unique_id], map: "fk_ostatok_furniture_unique_1")
+}
+
+model ostatok_furniture_end_product {
+  ostatok_furniture_id Int    @db.UnsignedInt
+  end_product_id       BigInt @db.UnsignedBigInt
+
+  @@id([ostatok_furniture_id, end_product_id])
+  @@index([end_product_id], map: "fk_ostatok_furniture_has_end_product_end_product1_idx")
+  @@index([ostatok_furniture_id], map: "fk_ostatok_furniture_has_end_product_ostatok_furniture1_idx")
+}
+
+model ostatok_temp {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id String   @db.VarChar(25)
+  unique_id    Int
+  amount       Int?
+  date         DateTime @db.Date
+  description  String   @db.Text
+  checked      Boolean  @default(false)
+  created      DateTime @default(now()) @db.Timestamp(0)
+  updated      DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+}
+
+model paid_worker {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  is_avans    Boolean  @default(false)
+  is_plastik  Boolean  @default(false)
+  amount      Decimal  @db.Decimal(20, 2)
+  money_id    Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+  created     DateTime @default(now()) @db.Timestamp(0)
+  updated     DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([worker_id], map: "fk_avans_worker1_idx")
+  @@index([money_id], map: "fk_paid_money1_idx")
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model password_resets {
+  email      String    @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+
+  @@index([email], map: "password_resets_email_index")
+  @@ignore
+}
+
+model payment {
+  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  company_id       Int?     @db.UnsignedInt
+  demand_id        Int?     @db.UnsignedInt
+  money_id         Int?     @db.UnsignedInt
+  payment_group_id Int?
+  kurs             Int?
+  amount           Decimal? @db.Decimal(20, 2)
+  is_prepayment    Int      @default(0) @db.UnsignedTinyInt
+  date             DateTime @db.Date
+  description      String?  @db.Text
+  received         Boolean  @default(false)
+  created          DateTime @default(now()) @db.Timestamp(0)
+  updated          DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  fixture_id       Int?
+  customer_id      Int?     @db.UnsignedInt
+  magazin_id       Int?     @db.UnsignedInt
+  seller_id        Int?     @db.UnsignedInt
+
+  @@index([customer_id], map: "fk-payment-customer_id")
+  @@index([company_id], map: "fk_payment_company1_idx")
+  @@index([money_id], map: "fk_payment_money1_idx")
+  @@index([demand_id], map: "idx-payment-demand_id")
+  @@index([magazin_id], map: "idx-payment-magazin_id")
+  @@index([seller_id], map: "idx-payment-seller_id")
+}
+
+model payment2 {
+  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  company_id       Int?     @db.UnsignedInt
+  demand_id        Int?     @db.UnsignedInt
+  money_id         Int?     @db.UnsignedInt
+  payment_group_id Int?
+  kurs             Int?
+  amount           Decimal? @db.Decimal(20, 2)
+  is_prepayment    Int      @default(0) @db.UnsignedTinyInt
+  date             DateTime @db.Date
+  description      String?  @db.Text
+  received         Boolean  @default(false)
+  created          DateTime @default(now()) @db.Timestamp(0)
+  updated          DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  fixture_id       Int?
+  customer_id      Int?     @db.UnsignedInt
+  magazin_id       Int?     @db.UnsignedInt
+  seller_id        Int?     @db.UnsignedInt
+
+  @@index([customer_id], map: "fk-payment-customer_id")
+  @@index([company_id], map: "fk_payment_company1_idx")
+  @@index([money_id], map: "fk_payment_money1_idx")
+  @@index([demand_id], map: "idx-payment-demand_id")
+  @@index([magazin_id], map: "idx-payment-magazin_id")
+  @@index([seller_id], map: "idx-payment-seller_id")
+}
+
+model payment_group {
+  id     Int    @id @default(autoincrement())
+  name   String @db.VarChar(255)
+  sorder Int?
+}
+
+model permissions {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String    @db.VarChar(255)
+  guard_name String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+
+  @@unique([name, guard_name], map: "permissions_name_guard_name_unique")
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model plan {
+  id         Int    @id @default(autoincrement())
+  date       String @db.VarChar(7)
+  magazin_id Int    @db.UnsignedInt
+  amount     Int
+
+  @@index([magazin_id], map: "fk_plan_magazin1_idx")
+}
+
+model plan_seller {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  seller_id Int      @db.UnsignedInt
+  date      DateTime @db.Date
+  amount    Int
+
+  @@index([seller_id], map: "idx-plan_seller-seller_id")
+}
+
+model prepares {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  date       DateTime  @db.Date
+  demand_id  Int       @db.UnsignedInt
+  good_id    BigInt    @db.UnsignedBigInt
+  amount     Int       @db.UnsignedInt
+  sent       Boolean   @default(false)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+
+  @@index([demand_id], map: "prepares_demand_id_foreign")
+  @@index([good_id], map: "prepares_good_id_foreign")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model price_list {
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id         Int       @db.UnsignedInt
+  material_position_id Int?      @db.UnsignedInt
+  price_sebest0        Decimal?  @db.Decimal(20, 2)
+  price_sebest         Decimal?  @db.Decimal(20, 2)
+  price_optom          Decimal   @db.Decimal(10, 2)
+  price_magazin        Decimal   @db.Decimal(10, 2)
+  price_magazin_okr    Int?
+  date                 DateTime? @db.Date
+  price_magazin2       Int?      @default(0) @db.UnsignedInt
+  siryo_cost0          Decimal?  @db.Decimal(20, 2)
+  salary0              Decimal?  @db.Decimal(20, 2)
+  siryo_cost           Decimal?  @db.Decimal(20, 2)
+  salary               Decimal?  @db.Decimal(20, 2)
+  nakladnoy            Int?
+
+  @@index([furniture_id], map: "fk_priceLIst_furniture1_idx")
+  @@index([material_position_id], map: "idx-price_list-material_position_id")
+}
+
+model production {
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  map_id               Int       @db.UnsignedInt
+  demand_furniture_id  Int?      @db.UnsignedInt
+  amount               Int       @db.UnsignedInt
+  start                DateTime  @db.DateTime(0)
+  finish               DateTime  @db.DateTime(0)
+  started              DateTime? @db.DateTime(0)
+  finished             DateTime? @db.DateTime(0)
+  description          String    @db.Text
+  reserve_furniture_id Int?      @db.UnsignedInt
+
+  @@index([demand_furniture_id], map: "fk_production_demand_furniture1_idx")
+  @@index([map_id], map: "fk_production_map1_idx")
+  @@index([reserve_furniture_id], map: "fk_production_reserve_furniture1_idx")
+}
+
+model production_end_product {
+  production_id  Int    @db.UnsignedInt
+  end_product_id BigInt @db.UnsignedBigInt
+
+  @@id([production_id, end_product_id])
+  @@index([end_product_id], map: "fk_production_has_end_product_end_product1_idx")
+  @@index([production_id], map: "fk_production_has_end_product_production1_idx")
+}
+
+model production_unit_step {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  production_id Int       @db.UnsignedInt
+  unit_step_id  Int       @db.UnsignedInt
+  seh_id        Int       @db.UnsignedInt
+  duration      Int?      @db.UnsignedInt
+  cost          Decimal?  @db.Decimal(20, 10)
+  start_plan    DateTime? @db.DateTime(0)
+  start         DateTime? @db.DateTime(0)
+  started       DateTime? @db.DateTime(0)
+  finish_plan   DateTime? @db.DateTime(0)
+  finish        DateTime? @db.DateTime(0)
+  finished      DateTime? @db.DateTime(0)
+  sorder        Int       @default(0) @db.UnsignedTinyInt
+  paid          Boolean?  @default(false)
+  amount        Int?
+
+  @@index([seh_id], map: "fk_production_unit_step_seh1_idx")
+  @@index([unit_step_id], map: "fk_production_unit_step_unit_step1_idx")
+  @@index([production_id])
+}
+
+model pulse_aggregates {
+  id        BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  bucket    Int     @db.UnsignedInt
+  period    Int     @db.UnsignedMediumInt
+  type      String  @db.VarChar(255)
+  key       String  @db.MediumText
+  key_hash  Bytes?  @db.Binary(16)
+  aggregate String  @db.VarChar(255)
+  value     Decimal @db.Decimal(20, 2)
+  count     Int?    @db.UnsignedInt
+
+  @@unique([bucket, period, type, aggregate, key_hash], map: "pulse_aggregates_bucket_period_type_aggregate_key_hash_unique")
+  @@index([period, bucket], map: "pulse_aggregates_period_bucket_index")
+  @@index([period, type, aggregate, bucket], map: "pulse_aggregates_period_type_aggregate_bucket_index")
+  @@index([type], map: "pulse_aggregates_type_index")
+}
+
+model pulse_entries {
+  id        BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  timestamp Int     @db.UnsignedInt
+  type      String  @db.VarChar(255)
+  key       String  @db.MediumText
+  key_hash  Bytes?  @db.Binary(16)
+  value     BigInt?
+
+  @@index([key_hash], map: "pulse_entries_key_hash_index")
+  @@index([timestamp], map: "pulse_entries_timestamp_index")
+  @@index([timestamp, type, key_hash, value], map: "pulse_entries_timestamp_type_key_hash_value_index")
+  @@index([type], map: "pulse_entries_type_index")
+}
+
+model pulse_values {
+  id        BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  timestamp Int    @db.UnsignedInt
+  type      String @db.VarChar(255)
+  key       String @db.MediumText
+  key_hash  Bytes? @db.Binary(16)
+  value     String @db.MediumText
+
+  @@unique([type, key_hash], map: "pulse_values_type_key_hash_unique")
+  @@index([timestamp], map: "pulse_values_timestamp_index")
+  @@index([type], map: "pulse_values_type_index")
+}
+
+model region {
+  id         Int     @id @default(autoincrement()) @db.UnsignedInt
+  name       String  @db.VarChar(70)
+  name_latin String  @db.VarChar(70)
+  parent_id  Int?    @db.UnsignedInt
+  sorder     Int
+  code       String  @db.VarChar(6)
+  name_uz    String  @db.VarChar(255)
+  name_ru    String? @db.VarChar(255)
+  name_en    String? @db.VarChar(255)
+}
+
+model reserve {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  date        DateTime @db.Date
+  doc_no      String   @unique(map: "doc_no_UNIQUE") @db.VarChar(45)
+  description String?  @db.Text
+  vipusk_date String?  @db.VarChar(45)
+}
+
+model reserve_furniture {
+  id           Int       @id @db.UnsignedInt
+  reserve_id   Int       @db.UnsignedInt
+  furniture_id Int       @db.UnsignedInt
+  amount       String    @db.VarChar(45)
+  vipusk_date  DateTime? @db.Date
+  description  String?   @db.Text
+
+  @@index([furniture_id], map: "fk_reserve_furniture_furniture1_idx")
+  @@index([reserve_id], map: "fk_reserve_furniture_reserve1_idx")
+}
+
+model role {
+  id   Int     @id @default(autoincrement()) @db.UnsignedInt
+  name String? @db.VarChar(45)
+}
+
+model role_has_permissions {
+  permission_id BigInt @db.UnsignedBigInt
+  role_id       BigInt @db.UnsignedBigInt
+
+  @@id([permission_id, role_id])
+  @@index([role_id], map: "role_has_permissions_role_id_foreign")
+}
+
+model roles {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String    @db.VarChar(255)
+  guard_name String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+
+  @@unique([name, guard_name], map: "roles_name_guard_name_unique")
+}
+
+model salary {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  amount    Decimal  @db.Decimal(20, 2)
+  money_id  Int      @db.UnsignedInt
+  date      DateTime @db.Date
+
+  @@index([money_id], map: "fk_salary_money1_idx")
+  @@index([worker_id], map: "fk_salary_worker1_idx")
+}
+
+model sale {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  date         DateTime @unique(map: "date") @db.Date
+  percent_from Int?     @db.UnsignedInt
+  percent_to   Int      @db.UnsignedInt
+  tip_id       Int?     @db.UnsignedInt
+  tree_id      Int?     @db.UnsignedInt
+
+  @@index([tip_id], map: "tip_id")
+  @@index([tree_id], map: "tree_id")
+}
+
+model sale_category {
+  id           Int      @id @default(autoincrement())
+  category_id  Int
+  date         DateTime @db.Date
+  percent_from Int?
+  percent_to   Int
+  tip_id       Int?     @db.UnsignedInt
+  tree_id      Int?     @db.UnsignedInt
+
+  @@index([tip_id], map: "tip_id")
+  @@index([tree_id], map: "tree_id")
+}
+
+model sale_furniture {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id Int      @db.UnsignedInt
+  date         DateTime @db.Date
+  percent_from Int?     @db.UnsignedInt
+  percent_to   Int      @db.UnsignedInt
+  tree_id      Int?     @db.UnsignedInt
+
+  @@index([furniture_id], map: "idx-sale_furniture-furniture_id")
+  @@index([tree_id], map: "tree_id")
+}
+
+model sale_komplekt {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  komplekt_id  Int      @db.UnsignedInt
+  date         DateTime @db.Date
+  percent_from Int?     @db.UnsignedInt
+  percent_to   Int      @db.UnsignedInt
+  tip_id       Int?     @db.UnsignedInt
+  tree_id      Int?     @db.UnsignedInt
+
+  @@index([komplekt_id], map: "idx-sale_komplekt-komplekt_id")
+  @@index([tip_id], map: "tip_id")
+  @@index([tree_id], map: "tree_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sale_request {
+  id                 Int                @id @default(autoincrement()) @db.UnsignedInt
+  user_id            Int                @db.UnsignedInt
+  percent            Decimal?           @db.Decimal(5, 2)
+  table              sale_request_table
+  table_id           Int                @db.UnsignedInt
+  description_seller String             @db.Text
+  description_user   String?            @db.Text
+  response           Int                @default(0) @db.UnsignedTinyInt
+  created            DateTime           @default(now()) @db.Timestamp(0)
+  updated            DateTime           @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([user_id], map: "idx-sale_request-user_id")
+}
+
+model sale_user_can {
+  id      Int @id @default(autoincrement())
+  user_id Int @db.UnsignedInt
+  percent Int @db.TinyInt
+
+  @@index([user_id], map: "idx-sale_user_can-user_id")
+}
+
+model sborshik {
+  id   Int    @id @default(autoincrement()) @db.UnsignedInt
+  name String @db.VarChar(255)
+}
+
+model seh {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  name        String   @db.VarChar(100)
+  category_id Int?     @db.UnsignedInt
+  sorder      Int?     @unique(map: "sorder")
+  active      Boolean  @default(true)
+  tree        Boolean  @default(false)
+  description Boolean  @default(false)
+  handle      Boolean? @default(false)
+  mechanism   Boolean? @default(false)
+  material    Boolean  @default(false)
+
+  @@index([category_id], map: "fk-seh-category_id")
+}
+
+model seh_brigadir {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  seh_id     Int       @db.UnsignedInt
+  worker_id  Int       @db.UnsignedInt
+  date_began DateTime  @db.Date
+  date_end   DateTime? @db.Date
+  current    Boolean?  @default(true)
+
+  @@index([seh_id], map: "fk_seh_brigadir_seh1_idx")
+  @@index([worker_id], map: "fk_seh_brigadir_worker1_idx")
+}
+
+model seh_furniture_tip {
+  id              Int     @id @default(autoincrement())
+  furniture_id    Int     @db.UnsignedInt
+  tip_id          Int     @db.UnsignedInt
+  category_seh_id Int?    @db.UnsignedInt
+  seh_id          Int?    @db.UnsignedInt
+  order           String? @db.VarChar(45)
+  merging         Int     @default(0) @db.TinyInt
+  cost            String? @db.VarChar(45)
+  time            String? @db.VarChar(45)
+
+  @@index([category_seh_id], map: "fk_seh_furniture_tip_category_seh1_idx")
+  @@index([furniture_id], map: "fk_seh_furniture_tip_furniture1_idx")
+  @@index([seh_id], map: "fk_seh_furniture_tip_seh1_idx")
+  @@index([tip_id], map: "fk_seh_furniture_tip_tip1_idx")
+}
+
+model seh_permit {
+  id              Int  @id @default(autoincrement()) @db.UnsignedInt
+  order           Int?
+  seh_id          Int? @db.UnsignedInt
+  category_seh_id Int  @db.UnsignedInt
+  tip_id          Int  @db.UnsignedInt
+  cost            Int?
+
+  @@index([seh_id], map: "fk_seh_permit_seh1_idx")
+  @@index([tip_id], map: "fk_seh_permit_tip1_idx")
+}
+
+model seh_salary {
+  id     Int @id @default(autoincrement())
+  seh_id Int @db.UnsignedInt
+  year   Int @db.Year
+  month  Int @db.TinyInt
+  amount Int
+
+  @@index([seh_id], map: "idx-seh_salary-seh_id")
+}
+
+model seller {
+  id         Int     @id @default(autoincrement()) @db.UnsignedInt
+  name       String? @db.VarChar(45)
+  is_active  Int?    @default(1)
+  magazin_id Int     @db.UnsignedInt
+
+  @@index([magazin_id], map: "fk_seller_magazin1_idx")
+}
+
+model seller_interval_davomad {
+  id         Int      @id @default(autoincrement())
+  date1      DateTime @db.Date
+  date2      DateTime @db.Date
+  magazin_id Int      @db.UnsignedInt
+  seller_id  Int      @db.UnsignedInt
+  amount     Decimal  @db.Decimal(4, 2)
+
+  @@index([magazin_id], map: "idx-seller_interval_davomad-magazin_id")
+  @@index([seller_id], map: "idx-seller_interval_davomad-seller_id")
+}
+
+model sessions {
+  id            String  @id @db.VarChar(255)
+  user_id       BigInt? @db.UnsignedBigInt
+  ip_address    String? @db.VarChar(45)
+  user_agent    String? @db.Text
+  payload       String  @db.LongText
+  last_activity Int
+
+  @@index([last_activity], map: "sessions_last_activity_index")
+  @@index([user_id], map: "sessions_user_id_index")
+}
+
+model setting {
+  id          Int     @id @default(autoincrement())
+  type        String  @db.VarChar(10)
+  section     String  @db.VarChar(255)
+  key         String  @db.VarChar(255)
+  value       String  @db.Text
+  status      Int     @default(1) @db.SmallInt
+  description String? @db.VarChar(255)
+  created_at  Int
+  updated_at  Int
+}
+
+model shipment {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  driver_id   Int?      @db.UnsignedInt
+  date        DateTime? @db.Date
+  description String?   @db.Text
+  status      Boolean   @default(true)
+  created     DateTime  @default(now()) @db.Timestamp(0)
+  updated     DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([driver_id], map: "fk_shipment_driver1_idx")
+}
+
+model shipment_demand_furniture {
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  shipment_id         Int      @db.UnsignedInt
+  demand_furniture_id Int      @db.UnsignedInt
+  unique_id           Int?     @db.UnsignedInt
+  block_id            Int?
+  amount              Int      @db.UnsignedSmallInt
+  from_magazin_id     Int?     @db.UnsignedInt
+  by_magazin_id       Int?
+  closed              Int      @default(0) @db.UnsignedTinyInt
+  created             DateTime @default(now()) @db.Timestamp(0)
+  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([unique_id], map: "fk_shipment_demand_furniture_unique_1")
+  @@index([demand_furniture_id], map: "idx-shipment_demand_furniture-demand_furniture_id")
+  @@index([from_magazin_id], map: "idx-shipment_demand_furniture-from_magazin_id")
+  @@index([shipment_id], map: "idx-shipment_demand_furniture-shipment_id")
+}
+
+model shipment_demand_furniture_end_product {
+  shipment_demand_furniture_id Int    @db.UnsignedInt
+  end_product_id               BigInt @db.UnsignedBigInt
+
+  @@id([shipment_demand_furniture_id, end_product_id])
+  @@index([end_product_id], map: "fk_shipment_demand_furniture_end_product_end_product1_idx")
+  @@index([shipment_demand_furniture_id], map: "fk_shipment_demand_furniture_end_product_shipment_deman_idx")
+}
+
+model shipment_driver {
+  id          Int @id @default(autoincrement())
+  shipment_id Int
+  driver_id   Int
+
+  @@index([shipment_id], map: "idx-shipment_driver-shipment_id")
+}
+
+model shipment_late {
+  id          Int                  @id @default(autoincrement()) @db.UnsignedInt
+  demand_id   Int                  @db.UnsignedInt
+  date        DateTime?            @db.Date
+  cause       shipment_late_cause?
+  description String?              @db.Text
+  created     DateTime             @default(now()) @db.Timestamp(0)
+  updated     DateTime             @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+}
+
+model shipment_magazin {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  shipment_id Int     @db.UnsignedInt
+  status      Boolean @default(false)
+}
+
+model shipment_sborshik {
+  id          Int @id @default(autoincrement())
+  shipment_id Int @db.UnsignedInt
+  sborshik_id Int @db.UnsignedInt
+
+  @@index([sborshik_id], map: "idx-shipment_sborshik-sborshik_id")
+  @@index([shipment_id], map: "idx-shipment_sborshik-shipment_id")
+}
+
+model shpon {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+}
+
+model signal {
+  id             Int     @id @default(autoincrement()) @db.UnsignedInt
+  signal_type_id Int     @db.UnsignedSmallInt
+  text           String? @db.Text
+  table          String? @db.VarChar(30)
+  table_id       Int?    @db.UnsignedInt
+  closed         Boolean @default(false)
+  comment        String? @db.Text
+
+  @@index([signal_type_id], map: "fk_signal_signal_type1")
+}
+
+model signal_type {
+  id   Int    @id @default(autoincrement()) @db.UnsignedSmallInt
+  name String @unique(map: "name_UNIQUE") @db.VarChar(60)
+}
+
+model spisaniye {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id   Int?     @db.UnsignedInt
+  furniture_id Int      @db.UnsignedInt
+  unique_id    Int?     @db.UnsignedInt
+  block_id     Int?
+  amount       Int      @db.UnsignedInt
+  approved     Boolean  @default(false)
+  date         DateTime @db.Date
+  description  String?  @db.Text
+
+  @@index([furniture_id], map: "fk_spisaniye_furniture1_idx")
+  @@index([magazin_id], map: "fk_spisaniye_magazin1_idx")
+  @@index([unique_id], map: "fk_spisaniye_unique_1")
+}
+
+model stavka {
+  id   Int @id @default(autoincrement()) @db.UnsignedInt
+  yil  Int
+  foiz Int
+}
+
+model supermarket {
+  id           Int  @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id Int  @db.UnsignedInt
+  block_id     Int?
+  amount       Int?
+
+  @@index([furniture_id], map: "fk_table1_furniture1_idx")
+}
+
+model taxlil {
+  id   Int     @id @default(autoincrement()) @db.UnsignedInt
+  name String? @db.VarChar(45)
+}
+
+model test_ostatok {
+  id                  Int  @id @default(autoincrement())
+  furniture_id        Int
+  amount              Int
+  magazin_id          Int?
+  unique_id           Int?
+  demand_furniture_id Int?
+}
+
+model tip {
+  id   Int     @id @default(autoincrement()) @db.UnsignedInt
+  name String? @db.VarChar(50)
+}
+
+model tip_unit {
+  id     Int    @id @default(autoincrement()) @db.UnsignedInt
+  tip_id Int    @db.UnsignedInt
+  name   String @db.VarChar(255)
+  sorder Int    @db.UnsignedInt
+
+  @@unique([tip_id, name], map: "tip_id")
+  @@index([tip_id], map: "idx-tip_unit-tip_id")
+}
+
+model tip_unit_step {
+  id              Int    @id @default(autoincrement()) @db.UnsignedInt
+  tip_unit_id     Int    @db.UnsignedInt
+  category_seh_id Int    @db.UnsignedInt
+  seh_id          Int?   @db.UnsignedInt
+  name            String @db.VarChar(255)
+  description     String @db.Text
+  duration        Int?
+  cost            Int?
+  sorder          Int    @default(0) @db.UnsignedTinyInt
+
+  @@index([category_seh_id], map: "idx-tip_unit_step-category_seh_id")
+  @@index([seh_id], map: "idx-tip_unit_step-seh_id")
+  @@index([tip_unit_id], map: "idx-tip_unit_step-tip_unit_id")
+}
+
+model tree {
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  name   String? @db.VarChar(300)
+  status Boolean @default(false)
+}
+
+model unique {
+  id           Int     @id @default(autoincrement()) @db.UnsignedInt
+  name         String  @unique(map: "name") @db.VarChar(10)
+  status       Boolean @default(false)
+  tree_id      Int?
+  color_id     Int?
+  position_id  Int?
+  seh_id       Int?
+  furniture_id Int?
+  amount       Int?
+  package_quantity Int?
+}
+
+model unit {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  map_id    Int      @db.UnsignedInt
+  name      String   @db.VarChar(255)
+  amount    Int      @default(1) @db.UnsignedInt
+  tip_id    Int?     @db.UnsignedInt
+  parent_id BigInt   @default(0) @db.UnsignedBigInt
+  undefined Boolean? @default(false)
+
+  @@index([map_id], map: "fk_unit_map1_idx")
+  @@index([tip_id], map: "fk_unit_tip1_idx")
+}
+
+model unit_step {
+  id              Int      @id @default(autoincrement()) @db.UnsignedInt
+  unit_id         BigInt   @db.UnsignedBigInt
+  category_seh_id Int      @db.UnsignedInt
+  seh_id          Int?     @db.UnsignedInt
+  name            String   @db.VarChar(255)
+  description     String   @db.Text
+  duration        Int?
+  cost            Decimal? @db.Decimal(20, 10)
+  sorder          Int      @default(0) @db.UnsignedTinyInt
+  percent         Decimal? @db.Decimal(20, 17)
+
+  @@index([category_seh_id], map: "fk_unit_step_category_seh1_idx")
+  @@index([seh_id], map: "fk_unit_step_seh1_idx")
+  @@index([unit_id], map: "fk_unit_step_unit1_idx")
+}
+
+model units {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String    @unique(map: "units_name_unique") @db.VarChar(30)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model user {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  role_id     Int       @db.UnsignedInt
+  fio         String?   @db.VarChar(100)
+  username    String?   @db.VarChar(45)
+  password    String?   @db.VarChar(150)
+  active      Int?      @default(1)
+  is_delete   Int?      @default(0)
+  seller_id   Int?      @db.UnsignedInt
+  last_change DateTime? @db.Date
+
+  @@index([role_id], map: "fk_user_role_idx")
+  @@index([seller_id], map: "fk_user_seller1_idx")
+}
+
+model user2 {
+  id        Int     @id @default(autoincrement()) @db.UnsignedInt
+  role_id   Int     @db.UnsignedInt
+  fio       String? @db.VarChar(100)
+  username  String? @db.VarChar(45)
+  password  String? @db.VarChar(150)
+  active    Int?    @default(1)
+  is_delete Int?    @default(0)
+  seller_id Int?    @db.UnsignedInt
+
+  @@index([role_id], map: "fk_user_role_idx")
+  @@index([seller_id], map: "fk_user_seller1_idx")
+}
+
+model users {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name              String    @db.VarChar(255)
+  phone             String?   @unique(map: "users_phone_unique") @db.VarChar(30)
+  email             String    @unique(map: "users_email_unique") @db.VarChar(255)
+  email_verified_at DateTime? @db.Timestamp(0)
+  password          String    @db.VarChar(255)
+  active            Boolean   @default(true)
+  remember_token    String?   @db.VarChar(100)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+}
+
+model vipusk {
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id        Int?      @db.UnsignedInt
+  unique_id           Int?      @db.UnsignedInt
+  block_id            Int?
+  demand_furniture_id Int?      @db.UnsignedInt
+  amount              Int
+  date                DateTime? @db.Date
+  description         String?   @db.Text
+  status              Boolean   @default(true)
+  created             DateTime  @default(now()) @db.Timestamp(0)
+  updated             DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([demand_furniture_id], map: "fk_vipusk_demand_furniture1_idx")
+  @@index([furniture_id], map: "fk_vipusk_furniture1_idx")
+  @@index([unique_id], map: "fk_vipusk_unique_1")
+}
+
+model vipusk_end_product {
+  vipusk_id      Int    @db.UnsignedInt
+  end_product_id BigInt @db.UnsignedBigInt
+
+  @@id([vipusk_id, end_product_id])
+  @@index([end_product_id], map: "fk_vipusk_has_end_product_end_product1_idx")
+  @@index([vipusk_id], map: "fk_vipusk_has_end_product_vipusk1_idx")
+}
+
+model vitrina_demand {
+  id            Int       @id @default(autoincrement())
+  magazin_id    Int
+  seller_id     Int
+  date          DateTime  @db.Date
+  description   String?   @db.Text
+  doc_no        String    @db.VarChar(30)
+  vipusk_date   DateTime  @db.Date
+  delivery_date DateTime  @db.Date
+  is_approved   Boolean   @default(false)
+  closed        Boolean   @default(false)
+  created       DateTime  @db.DateTime(0)
+  updated       DateTime  @db.DateTime(0)
+  watch_status  Boolean?
+  edit_date     DateTime? @db.DateTime(0)
+}
+
+model vitrina_demand_furniture {
+  id                   Int       @id @default(autoincrement())
+  vitrina_demand_id    Int
+  furniture_id         Int       @db.UnsignedInt
+  material_position_id Int?
+  is_custom            Boolean?  @default(false)
+  description          String?   @db.Text
+  amount               Int
+  material_ids         String?   @db.Text
+  color_id             Int
+  handle_id            Int
+  has_glass            Boolean   @default(false)
+  has_drawing          Boolean   @default(false)
+  cancelled            Boolean   @default(false)
+  tree_id              Int
+  shpon_id             Int
+  mechanism_id         Int
+  created              DateTime  @db.DateTime(0)
+  updated              DateTime? @db.DateTime(0)
+
+  @@index([furniture_id], map: "furniture_id")
+}
+
+model vitrina_ostatok {
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id          Int       @db.UnsignedInt
+  furniture_id        Int       @db.UnsignedInt
+  unique_id           Int?      @db.UnsignedInt
+  block_id            Int?
+  amount              Decimal   @db.Decimal(20, 3)
+  date                DateTime  @db.Date
+  age                 DateTime? @db.Date
+  approved            Int       @default(0) @db.UnsignedTinyInt
+  description_sklad   String?   @db.Text
+  description_magazin String?   @db.Text
+  created             DateTime  @default(now()) @db.Timestamp(0)
+  updated             DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([magazin_id], map: "fk_ostatkaVitrina_magazin1_idx")
+  @@index([furniture_id], map: "fk_ostatka_vitrina_furniture1_idx")
+  @@index([unique_id], map: "fk_vitrina_ostatok_unique_1")
+}
+
+model vitrina_ostatok_end_product {
+  vitrina_ostatok_id Int    @db.UnsignedInt
+  end_product_id     BigInt @db.UnsignedBigInt
+
+  @@id([vitrina_ostatok_id, end_product_id])
+  @@index([end_product_id], map: "fk_vitrina_ostatok_has_end_product_end_product1_idx")
+  @@index([vitrina_ostatok_id], map: "fk_vitrina_ostatok_has_end_product_vitrina_ostatok1_idx")
+}
+
+model vitrina_receive {
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id          Int      @db.UnsignedInt
+  from_magazin_id     Int?
+  furniture_id        Int      @db.UnsignedInt
+  unique_id           Int?     @db.UnsignedInt
+  block_id            Int?
+  amount              Decimal  @db.Decimal(20, 3)
+  date                DateTime @db.Date
+  received            Boolean
+  description_sklad   String?  @db.Text
+  description_magazin String?  @db.Text
+  created             DateTime @default(now()) @db.Timestamp(0)
+  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([unique_id], map: "fk_vitrina_receive_unique_1")
+  @@index([furniture_id], map: "furniture_id")
+}
+
+model vitrina_receive_end_product {
+  vitrina_receive_id Int    @db.UnsignedInt
+  end_product_id     BigInt @db.UnsignedBigInt
+
+  @@id([vitrina_receive_id, end_product_id])
+  @@index([end_product_id], map: "fk_vitrina_receive_has_end_product_end_product1_idx")
+  @@index([vitrina_receive_id], map: "fk_vitrina_receive_has_end_product_vitrina_receive1_idx")
+}
+
+model vitrina_vozvrat {
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id          Int      @db.UnsignedInt
+  furniture_id        Int      @db.UnsignedInt
+  unique_id           Int?     @db.UnsignedInt
+  block_id            Int?
+  amount              Decimal  @db.Decimal(20, 3)
+  date                DateTime @db.Date
+  received            Int      @default(0) @db.UnsignedTinyInt
+  description_magazin String?  @db.Text
+  description_sklad   String?  @db.Text
+  created             DateTime @default(now()) @db.Timestamp(0)
+  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([unique_id], map: "fk_vitrina_vozvrat_unique_1")
+  @@index([furniture_id], map: "fk_vozvratVitrina_furniture1_idx")
+  @@index([magazin_id], map: "fk_vozvrat_vitrina_magazin1_idx")
+}
+
+model vitrina_vozvrat_end_product {
+  vitrina_vozvrat_id Int    @db.UnsignedInt
+  end_product_id     BigInt @db.UnsignedBigInt
+
+  @@id([vitrina_vozvrat_id, end_product_id])
+  @@index([end_product_id], map: "fk_vitrina_vozvrat_has_end_product_end_product1_idx")
+  @@index([vitrina_vozvrat_id], map: "fk_vitrina_vozvrat_has_end_product_vitrina_vozvrat1_idx")
+}
+
+model vozvrat_demand_furniture {
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  demand_furniture_id Int      @db.UnsignedInt
+  unique_id           Int?     @db.UnsignedInt
+  block_id            Int?
+  magazin_id          Int?
+  date                DateTime @db.Date
+  description         String?  @db.Text
+  amount              Int
+
+  @@index([unique_id], map: "fk_vozvrat_demand_furniture_unique_1")
+  @@index([demand_furniture_id], map: "idx-vozvrat_demand_furniture-demand_furniture_id")
+}
+
+model vozvrat_demand_furniture_end_product {
+  vozvrat_demand_furniture_id Int    @db.UnsignedInt
+  end_product_id              BigInt @db.UnsignedBigInt
+
+  @@id([vozvrat_demand_furniture_id, end_product_id])
+  @@index([end_product_id], map: "fk_vozvrat_demand_furniture_end_product_end_product1_idx")
+  @@index([vozvrat_demand_furniture_id], map: "fk_vozvrat_demand_furniture_end_product_vozvrat_demand__idx")
+}
+
+model vozvrat_demand_furniture_payment {
+  id                          Int      @id @default(autoincrement()) @db.UnsignedInt
+  vozvrat_demand_furniture_id Int      @db.UnsignedInt
+  money_id                    Int      @db.UnsignedInt
+  amount                      Decimal  @db.Decimal(20, 2)
+  date                        DateTime @db.Date
+
+  @@index([money_id], map: "idx-vozvrat_demand_furniture_payment-money_id")
+  @@index([vozvrat_demand_furniture_id], map: "idx-vozvrat_demand_furniture_payment-vozvrat_demand_furniture_id")
+}
+
+model vozvrat_payment {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  demand_id   Int?     @db.UnsignedInt
+  payment_id  Int?     @db.UnsignedInt
+  amount      Decimal  @db.Decimal(20, 2)
+  money_id    Int      @db.UnsignedInt
+  kurs        Int?     @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+  created     DateTime @default(now()) @db.Timestamp(0)
+  updated     DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+
+  @@index([demand_id], map: "idx-vozvrat_payment-demand_id")
+  @@index([money_id], map: "idx-vozvrat_payment-money_id")
+  @@index([payment_id], map: "idx-vozvrat_payment-payment_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model worker {
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  name           String    @db.VarChar(255)
+  phone          String?   @db.VarChar(45)
+  address        String?   @db.VarChar(255)
+  began_work     DateTime? @db.Date
+  status         Int       @db.TinyInt
+  debt           Decimal   @default(0.00) @db.Decimal(20, 2)
+  debt2          Decimal   @default(0.00) @db.Decimal(20, 2)
+  debt2_money_id Int?
+}
+
+model worker_come {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  time1     Int      @db.UnsignedInt
+  time2     Int      @db.UnsignedInt
+  ayir      Int      @default(0) @db.UnsignedInt
+  time3     Int      @default(0)
+  time4     Int
+  date      DateTime @db.Date
+
+  @@index([worker_id], map: "fk_worker_keldi_worker1_idx")
+}
+
+model worker_debt {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  amount      Decimal  @db.Decimal(20, 2)
+  money_id    Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+
+  @@index([worker_id], map: "fk_dolg_worker1_idx")
+  @@index([money_id], map: "fk_worker_debt_money1_idx")
+}
+
+model worker_debt_retention {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  amount      Int
+  money_id    Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+
+  @@index([money_id], map: "fk_worker_debt_retention_money1_idx")
+  @@index([worker_id], map: "idx-worker_uderjenie_dolg-worker_id")
+}
+
+model worker_dept {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  dept_id   Int      @db.UnsignedInt
+  date      DateTime @db.Date
+  current   Boolean  @default(true)
+
+  @@index([dept_id], map: "fk_worker_dept_dept1_idx")
+  @@index([worker_id], map: "fk_worker_dept_worker1_idx")
+}
+
+model worker_fine {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  amount      Decimal  @db.Decimal(20, 2)
+  money_id    Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+
+  @@index([worker_id], map: "fk_shtraf_worker1_idx")
+  @@index([money_id], map: "fk_worker_fine_money1_idx")
+}
+
+model worker_fired {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+  current     Boolean  @default(true)
+
+  @@index([worker_id], map: "fk_worker_fired_worker1_idx")
+}
+
+model worker_gift {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int      @db.UnsignedInt
+  amount      Decimal  @db.Decimal(20, 2)
+  money_id    Int      @db.UnsignedInt
+  date        DateTime @db.Date
+  description String?  @db.Text
+
+  @@index([worker_id], map: "fk_gift_worker1_idx")
+  @@index([money_id], map: "fk_worker_gift_money1_idx")
+}
+
+model worker_month {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  month     DateTime @db.Date
+  amount    Decimal  @db.Decimal(4, 2)
+
+  @@index([worker_id], map: "fk_worker_month_worker1_idx")
+}
+
+model worker_oklad {
+  id        Int               @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int               @db.UnsignedInt
+  amount    Decimal           @db.Decimal(20, 2)
+  money_id  Int               @db.UnsignedInt
+  date      DateTime          @db.Date
+  current   Boolean           @default(true)
+  type      worker_oklad_type @default(month)
+  shift2    Decimal           @default(0.00) @db.Decimal(20, 2)
+  shift3    Decimal           @default(0.00) @db.Decimal(20, 2)
+
+  @@index([worker_id], map: "fk_oklad_worker1_idx")
+  @@index([money_id], map: "fk_worker_oklad_money1_idx")
+}
+
+model worker_tax {
+  id        Int      @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  amount    Decimal  @db.Decimal(20, 2)
+  date      DateTime @db.Date
+  included  Boolean? @default(true)
+
+  @@index([worker_id], map: "fk_nalog_worker1_idx")
+}
+
+model worker_week_days {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  worker_id Int      @db.UnsignedInt
+  date      DateTime @db.Date
+  days      Int      @default(6) @db.UnsignedTinyInt
+
+  @@index([worker_id], map: "fk_worker_week_days_worker1_idx")
+}
+
+model working_hour {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  dept_id   Int?     @db.UnsignedInt
+  worker_id Int?     @db.UnsignedInt
+  hours     Int      @db.TinyInt
+  minute    Int      @default(0) @db.UnsignedTinyInt
+  days      Int      @default(6) @db.TinyInt
+  month     DateTime @db.Date
+  current   Boolean  @default(true)
+
+  @@index([dept_id], map: "fk_working_hour_dept1_idx")
+  @@index([worker_id], map: "fk_working_hour_worker1_idx")
+}
+
+enum dept_type {
+  personal
+  worker
+}
+
+enum notif_type {
+  info
+  success
+  warning
+  danger
+}
+
+enum mb_push_task_status {
+  P
+  F
+  E
+}
+
+enum sale_request_table {
+  demand
+  demand_furniture
+}
+
+enum shipment_late_cause {
+  sklad
+  seh
+  klient
+  EMPTY_ENUM_VALUE @map("")
+}
+
+enum worker_oklad_type {
+  month
+  day
+}
+
+enum mb_actions_category {
+  NEWS
+  EVENT
+}
