@@ -36,7 +36,7 @@ model aksiya {
   magazin_id           Int?     @db.UnsignedInt
   date                 DateTime @db.Date
   created              DateTime @default(now()) @db.Timestamp(0)
-  updated              DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated              DateTime? 
   material_position_id Int?     @db.UnsignedInt
 
   @@index([magazin_id], map: "fk-aksiya-magazin_id")
@@ -244,7 +244,7 @@ model customer {
   birth_date         DateTime? @db.Date
   email              String?   @db.VarChar(60)
   created            DateTime  @default(now()) @db.Timestamp(0)
-  updated            DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated            DateTime?  
 
   @@index([user_id], map: "customer_user_id_foreign")
   @@index([customer_status_id], map: "idx-customer-customer_status_id")
@@ -265,7 +265,7 @@ model customer2 {
   birth_date         DateTime? @db.Date
   email              String?   @db.VarChar(60)
   created            DateTime  @default(now()) @db.Timestamp(0)
-  updated            DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated            DateTime?  
 
   @@index([user_id], map: "customer_user_id_foreign")
   @@index([customer_status_id], map: "idx-customer-customer_status_id")
@@ -342,7 +342,7 @@ model demand {
   seller_rating Boolean?
   closed        Boolean   @default(false)
   created       DateTime  @default(now()) @db.Timestamp(0)
-  updated       DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated       DateTime?  
   edit_date     DateTime? @db.Timestamp(0)
   watch_status  Boolean?
   region_id     Int?      @db.UnsignedInt
@@ -383,7 +383,7 @@ model demand2 {
   seller_rating Boolean?
   closed        Boolean   @default(false)
   created       DateTime  @default(now()) @db.Timestamp(0)
-  updated       DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated       DateTime?  
   edit_date     DateTime? @db.Timestamp(0)
   watch_status  Boolean?
   region_id     Int?      @db.UnsignedInt
@@ -1132,7 +1132,7 @@ model notif {
   time     DateTime   @db.DateTime(0)
   active   Boolean
   created  DateTime   @default(now()) @db.Timestamp(0)
-  updated  DateTime   @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated  DateTime?   
   table    String?    @db.VarChar(25)
   table_id Int?
 }
@@ -1255,7 +1255,7 @@ model ostatok_temp {
   description  String   @db.Text
   checked      Boolean  @default(false)
   created      DateTime @default(now()) @db.Timestamp(0)
-  updated      DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated      DateTime? 
 }
 
 model paid_worker {
@@ -1268,7 +1268,7 @@ model paid_worker {
   date        DateTime @db.Date
   description String?  @db.Text
   created     DateTime @default(now()) @db.Timestamp(0)
-  updated     DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated     DateTime? 
 
   @@index([worker_id], map: "fk_avans_worker1_idx")
   @@index([money_id], map: "fk_paid_money1_idx")
@@ -1303,7 +1303,7 @@ model payment {
   description      String?  @db.Text
   received         Boolean  @default(false)
   created          DateTime @default(now()) @db.Timestamp(0)
-  updated          DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated          DateTime? 
   fixture_id       Int?
   customer_id      Int?     @db.UnsignedInt
   magazin_id       Int?     @db.UnsignedInt
@@ -1330,7 +1330,7 @@ model payment2 {
   description      String?  @db.Text
   received         Boolean  @default(false)
   created          DateTime @default(now()) @db.Timestamp(0)
-  updated          DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated          DateTime? 
   fixture_id       Int?
   customer_id      Int?     @db.UnsignedInt
   magazin_id       Int?     @db.UnsignedInt
@@ -1650,7 +1650,7 @@ model sale_request {
   description_user   String?            @db.Text
   response           Int                @default(0) @db.UnsignedTinyInt
   created            DateTime           @default(now()) @db.Timestamp(0)
-  updated            DateTime           @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated            DateTime?           
 
   @@index([user_id], map: "idx-sale_request-user_id")
 }
@@ -1786,7 +1786,7 @@ model shipment {
   description String?   @db.Text
   status      Boolean   @default(true)
   created     DateTime  @default(now()) @db.Timestamp(0)
-  updated     DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated     DateTime?  
 
   @@index([driver_id], map: "fk_shipment_driver1_idx")
 }
@@ -1802,7 +1802,7 @@ model shipment_demand_furniture {
   by_magazin_id       Int?
   closed              Int      @default(0) @db.UnsignedTinyInt
   created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated             DateTime? 
 
   @@index([unique_id], map: "fk_shipment_demand_furniture_unique_1")
   @@index([demand_furniture_id], map: "idx-shipment_demand_furniture-demand_furniture_id")
@@ -1834,7 +1834,7 @@ model shipment_late {
   cause       shipment_late_cause?
   description String?              @db.Text
   created     DateTime             @default(now()) @db.Timestamp(0)
-  updated     DateTime             @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated     DateTime?             
 }
 
 model shipment_magazin {
@@ -1963,7 +1963,7 @@ model unique {
   tree_id      Int?
   color_id     Int?
   position_id  Int?
-  seh_id       Int?
+  seh_id       Int? 
   furniture_id Int?
   amount       Int?
   package_quantity Int?
@@ -2059,7 +2059,7 @@ model vipusk {
   description         String?   @db.Text
   status              Boolean   @default(true)
   created             DateTime  @default(now()) @db.Timestamp(0)
-  updated             DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated             DateTime?  
 
   @@index([demand_furniture_id], map: "fk_vipusk_demand_furniture1_idx")
   @@index([furniture_id], map: "fk_vipusk_furniture1_idx")
@@ -2128,7 +2128,7 @@ model vitrina_ostatok {
   description_sklad   String?   @db.Text
   description_magazin String?   @db.Text
   created             DateTime  @default(now()) @db.Timestamp(0)
-  updated             DateTime  @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated             DateTime?  
 
   @@index([magazin_id], map: "fk_ostatkaVitrina_magazin1_idx")
   @@index([furniture_id], map: "fk_ostatka_vitrina_furniture1_idx")
@@ -2157,7 +2157,7 @@ model vitrina_receive {
   description_sklad   String?  @db.Text
   description_magazin String?  @db.Text
   created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated             DateTime? 
 
   @@index([unique_id], map: "fk_vitrina_receive_unique_1")
   @@index([furniture_id], map: "furniture_id")
@@ -2184,7 +2184,7 @@ model vitrina_vozvrat {
   description_magazin String?  @db.Text
   description_sklad   String?  @db.Text
   created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated             DateTime? 
 
   @@index([unique_id], map: "fk_vitrina_vozvrat_unique_1")
   @@index([furniture_id], map: "fk_vozvratVitrina_furniture1_idx")
@@ -2244,7 +2244,7 @@ model vozvrat_payment {
   date        DateTime @db.Date
   description String?  @db.Text
   created     DateTime @default(now()) @db.Timestamp(0)
-  updated     DateTime @default(dbgenerated("'0000-00-00 00:00:00'")) @db.Timestamp(0)
+  updated     DateTime? 
 
   @@index([demand_id], map: "idx-vozvrat_payment-demand_id")
   @@index([money_id], map: "idx-vozvrat_payment-money_id")

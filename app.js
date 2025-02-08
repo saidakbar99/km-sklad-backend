@@ -3,6 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
+import serialRoutes from './routes/serialRoutes.js';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/api', serialRoutes);
 
 prisma.$connect()
   .then(() => {
