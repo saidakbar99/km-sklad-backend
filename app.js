@@ -11,7 +11,10 @@ const prisma = new PrismaClient();
 
 // Middleware
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-app.use(cors({ origin: ['https://km-sklad.netlify.app', 'http://localhost:3000'], credentials: true }));
+app.use(cors({ 
+  origin: ['https://km-sklad.netlify.app', 'http://localhost:3000'], 
+  credentials: true 
+}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -19,14 +22,24 @@ app.use(cookieParser());
 app.use('/auth', authRoutes);
 app.use('/api', serialRoutes);
 
-prisma.$connect()
-  .then(() => {
+const startServer = async () => {
+  try {
+    await prisma.$connect();
     console.log('Database connected');
-  })
-  .catch((err) => {
-    console.error('Database connection error:', err);
-  });
 
-app.listen(5000, () => {
-  console.log('Server running on PORT 5000');
+    app.listen(5000, () => {
+      console.log('Server running on PORT 5000');
+    });
+  } catch (err) {
+    console.error('Database connection error:', err);
+    process.exit(1); // Exit process on failure
+  }
+};
+
+startServer();
+
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  console.log('Database disconnected');
+  process.exit(0);
 });
