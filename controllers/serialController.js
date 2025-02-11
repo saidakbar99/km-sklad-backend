@@ -83,7 +83,11 @@ export const getSerials = async (req, res) => {
       furniture: {
         include: {
           category_furniture: true,
-          komplekt_furniture: true
+          komplekt_furniture: {
+            include: {
+              komplekt: true
+            }
+          }
         }
       },
       unique: {

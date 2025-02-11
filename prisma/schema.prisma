@@ -774,6 +774,8 @@ model komplekt {
   updated_at          DateTime? @db.Timestamp(0)
   deleted_at          DateTime? @db.Timestamp(0)
 
+  komplekt_furniture komplekt_furniture[]
+
   @@unique([name, category_id], map: "name_category_id_UNIQUE")
   @@index([category_id], map: "fk_komplekt_categoryFurniture1_idx")
 }
@@ -792,6 +794,7 @@ model komplekt_furniture {
   not_archived Int?
 
   furniture  furniture @relation(fields: [furniture_id], references: [id])
+  komplekt komplekt @relation(fields: [komplekt_id], references: [id])
 
   @@unique([furniture_id, not_archived], map: "komplekt_furniture_furniture_id_not_archived_unique")
   @@index([furniture_id], map: "fk_komplekt_furniture_furniture1_idx")
