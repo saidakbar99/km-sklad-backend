@@ -76,7 +76,7 @@ export const getSerials = async (req, res) => {
   const serials = await prisma.vipusk.findMany({ 
     where: {
       date: {
-        gte: new Date("2025-01-01T00:00:00.000Z"),
+        gte: new Date("2024-11-01T00:00:00.000Z"),
       },
     },
     include: {
