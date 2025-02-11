@@ -78,6 +78,26 @@ export const getSerials = async (req, res) => {
       date: {
         gte: new Date("2025-01-01T00:00:00.000Z"),
       },
+    },
+    include: {
+      furniture: {
+        include: {
+          category_furniture: true,
+          komplekt_furniture: true
+        }
+      },
+      unique: {
+        include: {
+          color: true
+        }
+      },
+      demand_furniture: {
+        include: {
+          demand: true,
+          furniture: true,
+          color: true
+        }
+      },
     }
   })
 

@@ -195,6 +195,8 @@ model category_furniture {
   updated_at        DateTime? @db.Timestamp(0)
   deleted_at        DateTime? @db.Timestamp(0)
 
+  furniture furniture[] @relation("CategoryFurnitureRelation")
+
   @@index([main_category_id], map: "fk_categoryFurniture_mainCategory1_idx")
 }
 
@@ -223,6 +225,9 @@ model color {
   no      Int?    @unique(map: "no") @db.UnsignedSmallInt
   sorder  Int?    @default(1000)
   checked Int     @default(0) @db.TinyInt
+
+  unique  unique[] @relation("ColorUniqueRelation")
+  demand_furniture demand_furniture[]
 }
 
 model company {
@@ -342,10 +347,12 @@ model demand {
   seller_rating Boolean?
   closed        Boolean   @default(false)
   created       DateTime  @default(now()) @db.Timestamp(0)
-  updated       DateTime?  
+  updated       DateTime? @db.Timestamp(0)
   edit_date     DateTime? @db.Timestamp(0)
   watch_status  Boolean?
   region_id     Int?      @db.UnsignedInt
+
+  demand_furniture  demand_furniture[] @relation("DemandFurnitureRelation")
 
   @@index([came_from_id], map: "fk_demand_cameFrom1_idx")
   @@index([customer_id], map: "fk_demand_customer1_idx")
@@ -422,6 +429,13 @@ model demand_furniture {
   shpon_id             Int?
   aksiya_id            Int?     @db.UnsignedInt
   sharnir              String?  @db.Text
+
+  demand    demand    @relation(fields: [demand_id], references: [id], name: "DemandFurnitureRelation")
+  furniture furniture? @relation(fields: [furniture_id], references: [id], name: "FurnitureDemandFurnitureRelation")
+  unique    unique?    @relation(fields: [unique_id], references: [id], name: "UniqueDemandFurnitureRelation")
+  color     color?     @relation(fields: [color_id], references: [id])
+  tree      tree?      @relation(fields: [tree_id], references: [id])
+  vipusk vipusk[]
 
   @@index([color_id], map: "fk_demand_furniture_color1_idx")
   @@index([demand_id], map: "fk_demand_furniture_demand1_idx")
@@ -561,6 +575,12 @@ model furniture {
   created_at        DateTime? @db.Timestamp(0)
   updated_at        DateTime? @db.Timestamp(0)
   deleted_at        DateTime? @db.Timestamp(0)
+
+  category_furniture category_furniture @relation(fields: [category_id], references: [id], name: "CategoryFurnitureRelation")
+  demand_furniture   demand_furniture[] @relation("FurnitureDemandFurnitureRelation")
+  komplekt_furniture komplekt_furniture[]
+  vipusk             vipusk[]
+  unique             unique[]
 
   @@index([category_id], map: "fk_furniture_categoryFurniture1_idx")
   @@index([tip_id], map: "fk_furniture_tip1_idx")
@@ -770,6 +790,8 @@ model komplekt_furniture {
   updated_at   DateTime? @db.Timestamp(0)
   deleted_at   DateTime? @db.Timestamp(0)
   not_archived Int?
+
+  furniture  furniture @relation(fields: [furniture_id], references: [id])
 
   @@unique([furniture_id, not_archived], map: "komplekt_furniture_furniture_id_not_archived_unique")
   @@index([furniture_id], map: "fk_komplekt_furniture_furniture1_idx")
@@ -1954,19 +1976,32 @@ model tree {
   id     Int     @id @default(autoincrement()) @db.UnsignedInt
   name   String? @db.VarChar(300)
   status Boolean @default(false)
+
+  unique  unique[] @relation("TreeUniqueRelation")
+
+  demand_furniture demand_furniture[]
 }
 
 model unique {
   id           Int     @id @default(autoincrement()) @db.UnsignedInt
   name         String  @unique(map: "name") @db.VarChar(10)
   status       Boolean @default(false)
-  tree_id      Int?
-  color_id     Int?
-  position_id  Int?
-  seh_id       Int? 
-  furniture_id Int?
-  amount       Int?
-  package_quantity Int?
+  tree_id      Int?     @db.UnsignedInt
+  color_id     Int?     @db.UnsignedInt
+  position_id  Int?     @db.UnsignedInt
+  seh_id       Int?     @db.UnsignedInt
+  furniture_id Int?     @db.UnsignedInt
+  amount       Int?     @db.UnsignedInt
+  package_quantity Int? @db.UnsignedInt
+
+  color        color?  @relation(fields: [color_id], references: [id], name: "ColorUniqueRelation")
+  tree         tree?   @relation(fields: [tree_id], references: [id], name: "TreeUniqueRelation")
+  furniture    furniture? @relation(fields: [furniture_id], references: [id])
+  vipusk       vipusk[]
+  demand_furniture demand_furniture[] @relation("UniqueDemandFurnitureRelation")
+
+  @@index([color_id], map: "fk_unique_color_idx")
+  @@index([tree_id], map: "fk_unique_tree_idx")
 }
 
 model unit {
@@ -2052,7 +2087,7 @@ model vipusk {
   id                  Int       @id @default(autoincrement()) @db.UnsignedInt
   furniture_id        Int?      @db.UnsignedInt
   unique_id           Int?      @db.UnsignedInt
-  block_id            Int?
+  block_id            Int?      @db.UnsignedInt
   demand_furniture_id Int?      @db.UnsignedInt
   amount              Int
   date                DateTime? @db.Date
@@ -2060,6 +2095,10 @@ model vipusk {
   status              Boolean   @default(true)
   created             DateTime  @default(now()) @db.Timestamp(0)
   updated             DateTime?  
+
+  furniture           furniture?       @relation(fields: [furniture_id], references: [id])
+  demand_furniture    demand_furniture? @relation(fields: [demand_furniture_id], references: [id])
+  unique              unique?          @relation(fields: [unique_id], references: [id])
 
   @@index([demand_furniture_id], map: "fk_vipusk_demand_furniture1_idx")
   @@index([furniture_id], map: "fk_vipusk_furniture1_idx")

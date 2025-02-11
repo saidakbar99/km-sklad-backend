@@ -10,7 +10,8 @@ const app = express();
 const prisma = new PrismaClient();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+// app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'https://km-sklad.netlify.app', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -27,5 +28,5 @@ prisma.$connect()
   });
 
 app.listen(5000, () => {
-  console.log('Server running on http://localhost:5000');
+  console.log('Server running on PORT 5000');
 });
