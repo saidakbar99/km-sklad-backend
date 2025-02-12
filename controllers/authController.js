@@ -43,5 +43,5 @@ export const login = async (req, res) => {
 
   const token = generateToken(user.id, user.role);
 
-  res.json({ token, message: 'Login successful' });
+  res.json({ token, user, message: 'Login successful' });
 };

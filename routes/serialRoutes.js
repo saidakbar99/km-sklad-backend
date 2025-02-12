@@ -13,7 +13,11 @@ import {
   getFurnitures,
   getColors,
   getTrees,
-  createSupermarketSerial
+  createSupermarketSerial,
+  getLastInvoiceNumber,
+  createInvoice,
+  getUserSeh,
+  getInvoices
 } from '../controllers/serialController.js';
 
 const router = express.Router();
@@ -36,6 +40,12 @@ router.post('/furnitures', getFurnitures)
 router.post('/supermarket-generation', createSupermarketSerial)
 
 // Serials
-router.get('/serials', getSerials)
+router.post('/serials', getSerials)
+
+//Nakladnoy
+router.post('/invoice', getInvoices)
+router.post('/invoice-creation', createInvoice)
+router.get('/last-invoice', getLastInvoiceNumber)
+router.post('/seh', getUserSeh)
 
 export default router;

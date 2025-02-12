@@ -249,6 +249,8 @@ model customer {
   created            DateTime  @default(now()) @db.Timestamp(0)
   updated            DateTime?
 
+  demand demand[]
+
   @@index([user_id], map: "customer_user_id_foreign")
   @@index([customer_status_id], map: "idx-customer-customer_status_id")
   @@fulltext([name, uniquen, phone, about, address, email], map: "all_info")
@@ -349,7 +351,9 @@ model demand {
   edit_date        DateTime?          @db.Timestamp(0)
   watch_status     Boolean?
   region_id        Int?               @db.UnsignedInt
+
   demand_furniture demand_furniture[] @relation("DemandFurnitureRelation")
+  customer         customer? @relation(fields: [customer_id], references: [id])
 
   @@index([came_from_id], map: "fk_demand_cameFrom1_idx")
   @@index([customer_id], map: "fk_demand_customer1_idx")
@@ -1987,6 +1991,7 @@ model unique {
   furniture_id     Int?               @db.UnsignedInt
   amount           Int?               @db.UnsignedInt
   package_quantity Int?               @db.UnsignedInt
+
   demand_furniture demand_furniture[] @relation("UniqueDemandFurnitureRelation")
   color            color?             @relation("ColorUniqueRelation", fields: [color_id], references: [id])
   furniture        furniture?         @relation(fields: [furniture_id], references: [id])
@@ -2084,12 +2089,14 @@ model vipusk {
   unique_id           Int?              @db.UnsignedInt
   block_id            Int?              @db.UnsignedInt
   demand_furniture_id Int?              @db.UnsignedInt
+  seh_id              Int?              @db.UnsignedInt
   amount              Int
   date                DateTime?         @db.Date
   description         String?           @db.Text
   status              Boolean           @default(true)
   created             DateTime          @default(now()) @db.Timestamp(0)
   updated             DateTime?
+
   demand_furniture    demand_furniture? @relation(fields: [demand_furniture_id], references: [id])
   furniture           furniture?        @relation(fields: [furniture_id], references: [id])
   unique              unique?           @relation(fields: [unique_id], references: [id])
@@ -2439,7 +2446,7 @@ model working_hour {
 model vipusk_nakladnoy {
   id     Int      @id @default(autoincrement()) @db.UnsignedInt
   date   DateTime @db.Date
-  seh_id Int
+  seh_id Int?     @db.UnsignedInt
 }
 
 model vipusk_nakladnoy_unique {

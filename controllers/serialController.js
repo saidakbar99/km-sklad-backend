@@ -82,7 +82,7 @@ export const unique = async (req, res) => {
 
 export const vipusk = async (req, res) => {
   try {
-    const { furnitureId, uniqueId, amount, date, demandFurnitureId } = req.body
+    const { furnitureId, uniqueId, amount, date, demandFurnitureId, sehId } = req.body
 
     await prisma.vipusk.create({
       data: {
@@ -91,6 +91,7 @@ export const vipusk = async (req, res) => {
         demand_furniture_id: demandFurnitureId,
         amount: amount,
         date: date,
+        seh_id: sehId
       }
     })
 
@@ -102,11 +103,13 @@ export const vipusk = async (req, res) => {
 
 export const getSerials = async (req, res) => {
   try {
+    const { sehId } = req.body
     const serials = await prisma.vipusk.findMany({ 
       where: {
         date: {
           gte: new Date("2025-01-01T00:00:00.000Z"),
         },
+        seh_id: sehId
       },
       orderBy: {
         id: 'desc'
@@ -130,7 +133,11 @@ export const getSerials = async (req, res) => {
         },
         demand_furniture: {
           include: {
-            demand: true,
+            demand: {
+              include: {
+                customer: true
+              }
+            },
             furniture: true,
             color: true
           }
@@ -243,7 +250,15 @@ const generateUniqueSPName = async () => {
 
 export const createSupermarketSerial = async (req, res) => {
   try {
-    const { treeId, colorId, positionId, furnitureId, amount, date } = req.body
+    const { 
+      treeId, 
+      colorId, 
+      positionId, 
+      furnitureId, 
+      amount, 
+      date, 
+      sehId 
+    } = req.body
     const name = await generateUniqueSPName();
 
     const unique = await prisma.unique.create({
@@ -253,7 +268,7 @@ export const createSupermarketSerial = async (req, res) => {
         color_id: colorId,
         position_id: positionId,
         furniture_id: furnitureId,
-        amount: amount,
+        amount: amount
       }
     })
 
@@ -263,11 +278,86 @@ export const createSupermarketSerial = async (req, res) => {
         unique_id: unique.id,
         demand_furniture_id: null,
         amount: amount,
-        date: date
+        date: date,
+        seh_id: sehId
       }
     })
 
     res.json({ message: 'Serial generated'})
+  } catch (error) {
+    console.log('Server error: ', error)
+  }
+}
+
+export const getLastInvoiceNumber = async (req, res) => {
+  try {
+    const lastInvoiceId = await prisma.vipusk_nakladnoy.findFirst({
+      orderBy: { id: 'desc' },
+      select: { id: true },
+    });
+
+    res.json({ lastInvoiceId })
+  } catch (error) {
+    console.log('Server error: ', error)
+  }
+}
+
+export const createInvoice = async (req, res) => {
+  try {
+    const {
+      invoiceNumber,
+      sehId,
+      date,
+      uniqueIds
+    } = req.body
+
+    const nakladnoy = await prisma.vipusk_nakladnoy.create({
+      data: {
+        id: invoiceNumber,
+        date: date,
+        seh_id: sehId
+      }
+    })
+
+    await prisma.vipusk_nakladnoy_unique.createMany({
+      data: uniqueIds.map((unique_id) => ({
+        unique_id,
+        vipusk_nakladnoy_id: nakladnoy.id,
+      })),
+    })
+    
+
+    res.json({ message: 'Vipusk nakladnoy created'})
+  } catch (error) {
+    console.log('Server error: ', error)
+  }
+}
+
+export const getUserSeh = async (req, res) => {
+  try {
+    const { sehId } = req.body
+    const seh = await prisma.seh.findFirst({
+      where: {
+        id: parseInt(sehId)
+      }
+    })
+
+    res.json({ seh })
+  } catch (error) {
+    console.log('Server error: ', error)
+  }
+}
+
+export const getInvoices = async (req, res) => {
+  try {
+    const { sehId } = req.body
+    const invoices = await prisma.vipusk_nakladnoy.findMany({
+      where: {
+        seh_id: sehId
+      }
+    })
+
+    res.json({ invoices })
   } catch (error) {
     console.log('Server error: ', error)
   }
