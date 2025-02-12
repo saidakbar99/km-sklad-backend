@@ -28,16 +28,16 @@ model action {
 }
 
 model aksiya {
-  id                   Int      @id @default(autoincrement()) @db.UnsignedInt
-  furniture_id         Int      @db.UnsignedInt
-  amount               Int      @db.UnsignedInt
-  sale                 Decimal? @db.Decimal(5, 2)
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id         Int       @db.UnsignedInt
+  amount               Int       @db.UnsignedInt
+  sale                 Decimal?  @db.Decimal(5, 2)
   cost                 Int?
-  magazin_id           Int?     @db.UnsignedInt
-  date                 DateTime @db.Date
-  created              DateTime @default(now()) @db.Timestamp(0)
-  updated              DateTime? 
-  material_position_id Int?     @db.UnsignedInt
+  magazin_id           Int?      @db.UnsignedInt
+  date                 DateTime  @db.Date
+  created              DateTime  @default(now()) @db.Timestamp(0)
+  updated              DateTime?
+  material_position_id Int?      @db.UnsignedInt
 
   @@index([magazin_id], map: "fk-aksiya-magazin_id")
   @@index([furniture_id], map: "fk_aksiya_furniture1_idx")
@@ -178,24 +178,23 @@ model cashback_spends {
 }
 
 model category_furniture {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  main_category_id  Int       @db.UnsignedInt
-  name              String    @db.VarChar(45)
-  text_for_document String    @db.VarChar(60)
-  sorder            Int       @default(1000)
-  active            Boolean   @default(false)
-  name_uz           String?   @db.VarChar(255)
-  name_ru           String?   @db.VarChar(255)
-  name_en           String?   @db.VarChar(255)
-  description_uz    String?   @db.Text
-  description_ru    String?   @db.Text
-  description_en    String?   @db.Text
-  in_mobile         Boolean   @default(true)
-  created_at        DateTime? @db.Timestamp(0)
-  updated_at        DateTime? @db.Timestamp(0)
-  deleted_at        DateTime? @db.Timestamp(0)
-
-  furniture furniture[] @relation("CategoryFurnitureRelation")
+  id                Int         @id @default(autoincrement()) @db.UnsignedInt
+  main_category_id  Int         @db.UnsignedInt
+  name              String      @db.VarChar(45)
+  text_for_document String      @db.VarChar(60)
+  sorder            Int         @default(1000)
+  active            Boolean     @default(false)
+  name_uz           String?     @db.VarChar(255)
+  name_ru           String?     @db.VarChar(255)
+  name_en           String?     @db.VarChar(255)
+  description_uz    String?     @db.Text
+  description_ru    String?     @db.Text
+  description_en    String?     @db.Text
+  in_mobile         Boolean     @default(true)
+  created_at        DateTime?   @db.Timestamp(0)
+  updated_at        DateTime?   @db.Timestamp(0)
+  deleted_at        DateTime?   @db.Timestamp(0)
+  furniture         furniture[] @relation("CategoryFurnitureRelation")
 
   @@index([main_category_id], map: "fk_categoryFurniture_mainCategory1_idx")
 }
@@ -220,14 +219,13 @@ model change_unique {
 }
 
 model color {
-  id      Int     @id @default(autoincrement()) @db.UnsignedInt
-  name    String? @db.VarChar(150)
-  no      Int?    @unique(map: "no") @db.UnsignedSmallInt
-  sorder  Int?    @default(1000)
-  checked Int     @default(0) @db.TinyInt
-
-  unique  unique[] @relation("ColorUniqueRelation")
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String?            @db.VarChar(150)
+  no               Int?               @unique(map: "no") @db.UnsignedSmallInt
+  sorder           Int?               @default(1000)
+  checked          Int                @default(0) @db.TinyInt
   demand_furniture demand_furniture[]
+  unique           unique[]           @relation("ColorUniqueRelation")
 }
 
 model company {
@@ -249,7 +247,7 @@ model customer {
   birth_date         DateTime? @db.Date
   email              String?   @db.VarChar(60)
   created            DateTime  @default(now()) @db.Timestamp(0)
-  updated            DateTime?  
+  updated            DateTime?
 
   @@index([user_id], map: "customer_user_id_foreign")
   @@index([customer_status_id], map: "idx-customer-customer_status_id")
@@ -270,7 +268,7 @@ model customer2 {
   birth_date         DateTime? @db.Date
   email              String?   @db.VarChar(60)
   created            DateTime  @default(now()) @db.Timestamp(0)
-  updated            DateTime?  
+  updated            DateTime?
 
   @@index([user_id], map: "customer_user_id_foreign")
   @@index([customer_status_id], map: "idx-customer-customer_status_id")
@@ -320,39 +318,38 @@ model dayoff {
 }
 
 model demand {
-  id            Int       @id @default(autoincrement()) @db.UnsignedInt
-  magazin_id    Int       @db.UnsignedInt
-  seller_id     Int       @db.UnsignedInt
-  seller_id1    Int?      @db.UnsignedInt
-  customer_id   Int       @db.UnsignedInt
-  taxlil_id     Int       @db.UnsignedInt
-  came_from_id  Int       @db.UnsignedInt
-  time_from     String?   @db.VarChar(5)
-  time_to       String?   @db.VarChar(5)
-  date          DateTime? @default(now()) @db.Timestamp(0)
-  vipusk_date   DateTime? @db.Date
-  description   String?   @db.Text
-  fixture_id    Int?
-  doc_no        String?   @db.VarChar(11)
-  contract_no   String?   @db.VarChar(100)
-  kurs          Int?
-  delivery_date DateTime? @db.Date
-  is_delivery   Boolean?
-  is_assembly   Boolean?
-  is_approved   Boolean   @default(false)
-  is_come_back  Boolean   @default(false)
-  is_vitrina    Boolean   @default(false)
-  address       String?   @db.Text
-  add_sale      Int       @default(0)
-  seller_rating Boolean?
-  closed        Boolean   @default(false)
-  created       DateTime  @default(now()) @db.Timestamp(0)
-  updated       DateTime? @db.Timestamp(0)
-  edit_date     DateTime? @db.Timestamp(0)
-  watch_status  Boolean?
-  region_id     Int?      @db.UnsignedInt
-
-  demand_furniture  demand_furniture[] @relation("DemandFurnitureRelation")
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id       Int                @db.UnsignedInt
+  seller_id        Int                @db.UnsignedInt
+  seller_id1       Int?               @db.UnsignedInt
+  customer_id      Int                @db.UnsignedInt
+  taxlil_id        Int                @db.UnsignedInt
+  came_from_id     Int                @db.UnsignedInt
+  time_from        String?            @db.VarChar(5)
+  time_to          String?            @db.VarChar(5)
+  date             DateTime?          @default(now()) @db.Timestamp(0)
+  vipusk_date      DateTime?          @db.Date
+  description      String?            @db.Text
+  fixture_id       Int?
+  doc_no           String?            @db.VarChar(11)
+  contract_no      String?            @db.VarChar(100)
+  kurs             Int?
+  delivery_date    DateTime?          @db.Date
+  is_delivery      Boolean?
+  is_assembly      Boolean?
+  is_approved      Boolean            @default(false)
+  is_come_back     Boolean            @default(false)
+  is_vitrina       Boolean            @default(false)
+  address          String?            @db.Text
+  add_sale         Int                @default(0)
+  seller_rating    Boolean?
+  closed           Boolean            @default(false)
+  created          DateTime           @default(now()) @db.Timestamp(0)
+  updated          DateTime?          @db.Timestamp(0)
+  edit_date        DateTime?          @db.Timestamp(0)
+  watch_status     Boolean?
+  region_id        Int?               @db.UnsignedInt
+  demand_furniture demand_furniture[] @relation("DemandFurnitureRelation")
 
   @@index([came_from_id], map: "fk_demand_cameFrom1_idx")
   @@index([customer_id], map: "fk_demand_customer1_idx")
@@ -390,7 +387,7 @@ model demand2 {
   seller_rating Boolean?
   closed        Boolean   @default(false)
   created       DateTime  @default(now()) @db.Timestamp(0)
-  updated       DateTime?  
+  updated       DateTime?
   edit_date     DateTime? @db.Timestamp(0)
   watch_status  Boolean?
   region_id     Int?      @db.UnsignedInt
@@ -404,38 +401,37 @@ model demand2 {
 }
 
 model demand_furniture {
-  id                   Int      @id @default(autoincrement()) @db.UnsignedInt
-  demand_id            Int      @db.UnsignedInt
-  furniture_id         Int?     @db.UnsignedInt
-  unique_id            Int?     @db.UnsignedInt
-  material_position_id Int?     @db.UnsignedInt
-  is_custom            Boolean  @default(false)
-  name                 String?  @db.VarChar(255)
-  description          String?  @db.Text
-  amount               Int      @default(1) @db.UnsignedInt
+  id                   Int        @id @default(autoincrement()) @db.UnsignedInt
+  demand_id            Int        @db.UnsignedInt
+  furniture_id         Int?       @db.UnsignedInt
+  unique_id            Int?       @db.UnsignedInt
+  material_position_id Int?       @db.UnsignedInt
+  is_custom            Boolean    @default(false)
+  name                 String?    @db.VarChar(255)
+  description          String?    @db.Text
+  amount               Int        @default(1) @db.UnsignedInt
   from_vitrina         Int?
-  cost                 Decimal? @db.Decimal(20, 2)
-  selling_cost         Decimal? @db.Decimal(20, 2)
-  material_ids         String?  @db.Text
-  color_id             Int?     @db.UnsignedInt
-  handle_id            Int?     @db.UnsignedSmallInt
-  mechanism_id         Int?     @db.UnsignedSmallInt
-  has_glass            Int      @default(0) @db.TinyInt
-  has_drawing          Boolean  @default(false)
-  cancelled            Boolean  @default(false)
+  cost                 Decimal?   @db.Decimal(20, 2)
+  selling_cost         Decimal?   @db.Decimal(20, 2)
+  material_ids         String?    @db.Text
+  color_id             Int?       @db.UnsignedInt
+  handle_id            Int?       @db.UnsignedSmallInt
+  mechanism_id         Int?       @db.UnsignedSmallInt
+  has_glass            Int        @default(0) @db.TinyInt
+  has_drawing          Boolean    @default(false)
+  cancelled            Boolean    @default(false)
   fixture_id           Int?
-  bron_magazin_id      Int?     @db.UnsignedInt
-  tree_id              Int?     @db.UnsignedInt
+  bron_magazin_id      Int?       @db.UnsignedInt
+  tree_id              Int?       @db.UnsignedInt
   shpon_id             Int?
-  aksiya_id            Int?     @db.UnsignedInt
-  sharnir              String?  @db.Text
-
-  demand    demand    @relation(fields: [demand_id], references: [id], name: "DemandFurnitureRelation")
-  furniture furniture? @relation(fields: [furniture_id], references: [id], name: "FurnitureDemandFurnitureRelation")
-  unique    unique?    @relation(fields: [unique_id], references: [id], name: "UniqueDemandFurnitureRelation")
-  color     color?     @relation(fields: [color_id], references: [id])
-  tree      tree?      @relation(fields: [tree_id], references: [id])
-  vipusk vipusk[]
+  aksiya_id            Int?       @db.UnsignedInt
+  sharnir              String?    @db.Text
+  color                color?     @relation(fields: [color_id], references: [id])
+  demand               demand     @relation("DemandFurnitureRelation", fields: [demand_id], references: [id])
+  furniture            furniture? @relation("FurnitureDemandFurnitureRelation", fields: [furniture_id], references: [id])
+  tree                 tree?      @relation(fields: [tree_id], references: [id])
+  unique               unique?    @relation("UniqueDemandFurnitureRelation", fields: [unique_id], references: [id])
+  vipusk               vipusk[]
 
   @@index([color_id], map: "fk_demand_furniture_color1_idx")
   @@index([demand_id], map: "fk_demand_furniture_demand1_idx")
@@ -552,35 +548,34 @@ model fixture {
 }
 
 model furniture {
-  id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  category_id       Int       @db.UnsignedInt
-  tip_id            Int?      @db.UnsignedInt
-  name              String?   @db.VarChar(100)
-  position          Int       @default(0) @db.UnsignedInt
-  is_glass          Int       @default(0)
-  is_custom         Boolean   @default(false)
-  furniture_id      Int?      @db.UnsignedInt
-  custom_status     Int       @default(0) @db.UnsignedTinyInt
-  size              String    @db.VarChar(100)
-  active            Boolean   @default(false)
-  min_photo         String?   @db.VarChar(255)
-  furniture_type_id Int?      @db.UnsignedInt
-  name_uz           String?   @db.VarChar(255)
-  name_ru           String?   @db.VarChar(255)
-  name_en           String?   @db.VarChar(255)
-  description_uz    String?   @db.Text
-  description_ru    String?   @db.Text
-  description_en    String?   @db.Text
-  in_mobile         Boolean   @default(true)
-  created_at        DateTime? @db.Timestamp(0)
-  updated_at        DateTime? @db.Timestamp(0)
-  deleted_at        DateTime? @db.Timestamp(0)
-
-  category_furniture category_furniture @relation(fields: [category_id], references: [id], name: "CategoryFurnitureRelation")
-  demand_furniture   demand_furniture[] @relation("FurnitureDemandFurnitureRelation")
+  id                 Int                  @id @default(autoincrement()) @db.UnsignedInt
+  category_id        Int                  @db.UnsignedInt
+  tip_id             Int?                 @db.UnsignedInt
+  name               String?              @db.VarChar(100)
+  position           Int                  @default(0) @db.UnsignedInt
+  is_glass           Int                  @default(0)
+  is_custom          Boolean              @default(false)
+  furniture_id       Int?                 @db.UnsignedInt
+  custom_status      Int                  @default(0) @db.UnsignedTinyInt
+  size               String               @db.VarChar(100)
+  active             Boolean              @default(false)
+  min_photo          String?              @db.VarChar(255)
+  furniture_type_id  Int?                 @db.UnsignedInt
+  name_uz            String?              @db.VarChar(255)
+  name_ru            String?              @db.VarChar(255)
+  name_en            String?              @db.VarChar(255)
+  description_uz     String?              @db.Text
+  description_ru     String?              @db.Text
+  description_en     String?              @db.Text
+  in_mobile          Boolean              @default(true)
+  created_at         DateTime?            @db.Timestamp(0)
+  updated_at         DateTime?            @db.Timestamp(0)
+  deleted_at         DateTime?            @db.Timestamp(0)
+  demand_furniture   demand_furniture[]   @relation("FurnitureDemandFurnitureRelation")
+  category_furniture category_furniture   @relation("CategoryFurnitureRelation", fields: [category_id], references: [id])
   komplekt_furniture komplekt_furniture[]
-  vipusk             vipusk[]
   unique             unique[]
+  vipusk             vipusk[]
 
   @@index([category_id], map: "fk_furniture_categoryFurniture1_idx")
   @@index([tip_id], map: "fk_furniture_tip1_idx")
@@ -756,25 +751,24 @@ model jobs {
 }
 
 model komplekt {
-  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
-  category_id         Int       @db.UnsignedInt
-  name                String    @db.VarChar(100)
-  active              Boolean   @default(false)
-  name_uz             String?   @db.VarChar(255)
-  name_ru             String?   @db.VarChar(255)
-  name_en             String?   @db.VarChar(255)
-  description_uz      String?   @db.Text
-  description_ru      String?   @db.Text
-  description_en      String?   @db.Text
-  youtube_video_id    String?   @db.VarChar(20)
-  youtube_video_url   String?   @db.VarChar(100)
-  instagram_video_url String?   @db.VarChar(100)
-  in_mobile           Boolean   @default(true)
-  created_at          DateTime? @db.Timestamp(0)
-  updated_at          DateTime? @db.Timestamp(0)
-  deleted_at          DateTime? @db.Timestamp(0)
-
-  komplekt_furniture komplekt_furniture[]
+  id                  Int                  @id @default(autoincrement()) @db.UnsignedInt
+  category_id         Int                  @db.UnsignedInt
+  name                String               @db.VarChar(100)
+  active              Boolean              @default(false)
+  name_uz             String?              @db.VarChar(255)
+  name_ru             String?              @db.VarChar(255)
+  name_en             String?              @db.VarChar(255)
+  description_uz      String?              @db.Text
+  description_ru      String?              @db.Text
+  description_en      String?              @db.Text
+  youtube_video_id    String?              @db.VarChar(20)
+  youtube_video_url   String?              @db.VarChar(100)
+  instagram_video_url String?              @db.VarChar(100)
+  in_mobile           Boolean              @default(true)
+  created_at          DateTime?            @db.Timestamp(0)
+  updated_at          DateTime?            @db.Timestamp(0)
+  deleted_at          DateTime?            @db.Timestamp(0)
+  komplekt_furniture  komplekt_furniture[]
 
   @@unique([name, category_id], map: "name_category_id_UNIQUE")
   @@index([category_id], map: "fk_komplekt_categoryFurniture1_idx")
@@ -792,9 +786,8 @@ model komplekt_furniture {
   updated_at   DateTime? @db.Timestamp(0)
   deleted_at   DateTime? @db.Timestamp(0)
   not_archived Int?
-
-  furniture  furniture @relation(fields: [furniture_id], references: [id])
-  komplekt komplekt @relation(fields: [komplekt_id], references: [id])
+  furniture    furniture @relation(fields: [furniture_id], references: [id])
+  komplekt     komplekt  @relation(fields: [komplekt_id], references: [id])
 
   @@unique([furniture_id, not_archived], map: "komplekt_furniture_furniture_id_not_archived_unique")
   @@index([furniture_id], map: "fk_komplekt_furniture_furniture1_idx")
@@ -1157,7 +1150,7 @@ model notif {
   time     DateTime   @db.DateTime(0)
   active   Boolean
   created  DateTime   @default(now()) @db.Timestamp(0)
-  updated  DateTime?   
+  updated  DateTime?
   table    String?    @db.VarChar(25)
   table_id Int?
 }
@@ -1272,28 +1265,28 @@ model ostatok_furniture_end_product {
 }
 
 model ostatok_temp {
-  id           Int      @id @default(autoincrement()) @db.UnsignedInt
-  furniture_id String   @db.VarChar(25)
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id String    @db.VarChar(25)
   unique_id    Int
   amount       Int?
-  date         DateTime @db.Date
-  description  String   @db.Text
-  checked      Boolean  @default(false)
-  created      DateTime @default(now()) @db.Timestamp(0)
-  updated      DateTime? 
+  date         DateTime  @db.Date
+  description  String    @db.Text
+  checked      Boolean   @default(false)
+  created      DateTime  @default(now()) @db.Timestamp(0)
+  updated      DateTime?
 }
 
 model paid_worker {
-  id          Int      @id @default(autoincrement()) @db.UnsignedInt
-  worker_id   Int      @db.UnsignedInt
-  is_avans    Boolean  @default(false)
-  is_plastik  Boolean  @default(false)
-  amount      Decimal  @db.Decimal(20, 2)
-  money_id    Int      @db.UnsignedInt
-  date        DateTime @db.Date
-  description String?  @db.Text
-  created     DateTime @default(now()) @db.Timestamp(0)
-  updated     DateTime? 
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  worker_id   Int       @db.UnsignedInt
+  is_avans    Boolean   @default(false)
+  is_plastik  Boolean   @default(false)
+  amount      Decimal   @db.Decimal(20, 2)
+  money_id    Int       @db.UnsignedInt
+  date        DateTime  @db.Date
+  description String?   @db.Text
+  created     DateTime  @default(now()) @db.Timestamp(0)
+  updated     DateTime?
 
   @@index([worker_id], map: "fk_avans_worker1_idx")
   @@index([money_id], map: "fk_paid_money1_idx")
@@ -1316,23 +1309,23 @@ model password_resets {
 }
 
 model payment {
-  id               Int      @id @default(autoincrement()) @db.UnsignedInt
-  company_id       Int?     @db.UnsignedInt
-  demand_id        Int?     @db.UnsignedInt
-  money_id         Int?     @db.UnsignedInt
+  id               Int       @id @default(autoincrement()) @db.UnsignedInt
+  company_id       Int?      @db.UnsignedInt
+  demand_id        Int?      @db.UnsignedInt
+  money_id         Int?      @db.UnsignedInt
   payment_group_id Int?
   kurs             Int?
-  amount           Decimal? @db.Decimal(20, 2)
-  is_prepayment    Int      @default(0) @db.UnsignedTinyInt
-  date             DateTime @db.Date
-  description      String?  @db.Text
-  received         Boolean  @default(false)
-  created          DateTime @default(now()) @db.Timestamp(0)
-  updated          DateTime? 
+  amount           Decimal?  @db.Decimal(20, 2)
+  is_prepayment    Int       @default(0) @db.UnsignedTinyInt
+  date             DateTime  @db.Date
+  description      String?   @db.Text
+  received         Boolean   @default(false)
+  created          DateTime  @default(now()) @db.Timestamp(0)
+  updated          DateTime?
   fixture_id       Int?
-  customer_id      Int?     @db.UnsignedInt
-  magazin_id       Int?     @db.UnsignedInt
-  seller_id        Int?     @db.UnsignedInt
+  customer_id      Int?      @db.UnsignedInt
+  magazin_id       Int?      @db.UnsignedInt
+  seller_id        Int?      @db.UnsignedInt
 
   @@index([customer_id], map: "fk-payment-customer_id")
   @@index([company_id], map: "fk_payment_company1_idx")
@@ -1343,23 +1336,23 @@ model payment {
 }
 
 model payment2 {
-  id               Int      @id @default(autoincrement()) @db.UnsignedInt
-  company_id       Int?     @db.UnsignedInt
-  demand_id        Int?     @db.UnsignedInt
-  money_id         Int?     @db.UnsignedInt
+  id               Int       @id @default(autoincrement()) @db.UnsignedInt
+  company_id       Int?      @db.UnsignedInt
+  demand_id        Int?      @db.UnsignedInt
+  money_id         Int?      @db.UnsignedInt
   payment_group_id Int?
   kurs             Int?
-  amount           Decimal? @db.Decimal(20, 2)
-  is_prepayment    Int      @default(0) @db.UnsignedTinyInt
-  date             DateTime @db.Date
-  description      String?  @db.Text
-  received         Boolean  @default(false)
-  created          DateTime @default(now()) @db.Timestamp(0)
-  updated          DateTime? 
+  amount           Decimal?  @db.Decimal(20, 2)
+  is_prepayment    Int       @default(0) @db.UnsignedTinyInt
+  date             DateTime  @db.Date
+  description      String?   @db.Text
+  received         Boolean   @default(false)
+  created          DateTime  @default(now()) @db.Timestamp(0)
+  updated          DateTime?
   fixture_id       Int?
-  customer_id      Int?     @db.UnsignedInt
-  magazin_id       Int?     @db.UnsignedInt
-  seller_id        Int?     @db.UnsignedInt
+  customer_id      Int?      @db.UnsignedInt
+  magazin_id       Int?      @db.UnsignedInt
+  seller_id        Int?      @db.UnsignedInt
 
   @@index([customer_id], map: "fk-payment-customer_id")
   @@index([company_id], map: "fk_payment_company1_idx")
@@ -1675,7 +1668,7 @@ model sale_request {
   description_user   String?            @db.Text
   response           Int                @default(0) @db.UnsignedTinyInt
   created            DateTime           @default(now()) @db.Timestamp(0)
-  updated            DateTime?           
+  updated            DateTime?
 
   @@index([user_id], map: "idx-sale_request-user_id")
 }
@@ -1811,23 +1804,23 @@ model shipment {
   description String?   @db.Text
   status      Boolean   @default(true)
   created     DateTime  @default(now()) @db.Timestamp(0)
-  updated     DateTime?  
+  updated     DateTime?
 
   @@index([driver_id], map: "fk_shipment_driver1_idx")
 }
 
 model shipment_demand_furniture {
-  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
-  shipment_id         Int      @db.UnsignedInt
-  demand_furniture_id Int      @db.UnsignedInt
-  unique_id           Int?     @db.UnsignedInt
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  shipment_id         Int       @db.UnsignedInt
+  demand_furniture_id Int       @db.UnsignedInt
+  unique_id           Int?      @db.UnsignedInt
   block_id            Int?
-  amount              Int      @db.UnsignedSmallInt
-  from_magazin_id     Int?     @db.UnsignedInt
+  amount              Int       @db.UnsignedSmallInt
+  from_magazin_id     Int?      @db.UnsignedInt
   by_magazin_id       Int?
-  closed              Int      @default(0) @db.UnsignedTinyInt
-  created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime? 
+  closed              Int       @default(0) @db.UnsignedTinyInt
+  created             DateTime  @default(now()) @db.Timestamp(0)
+  updated             DateTime?
 
   @@index([unique_id], map: "fk_shipment_demand_furniture_unique_1")
   @@index([demand_furniture_id], map: "idx-shipment_demand_furniture-demand_furniture_id")
@@ -1859,7 +1852,7 @@ model shipment_late {
   cause       shipment_late_cause?
   description String?              @db.Text
   created     DateTime             @default(now()) @db.Timestamp(0)
-  updated     DateTime?             
+  updated     DateTime?
 }
 
 model shipment_magazin {
@@ -1976,35 +1969,33 @@ model tip_unit_step {
 }
 
 model tree {
-  id     Int     @id @default(autoincrement()) @db.UnsignedInt
-  name   String? @db.VarChar(300)
-  status Boolean @default(false)
-
-  unique  unique[] @relation("TreeUniqueRelation")
-
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String?            @db.VarChar(300)
+  status           Boolean            @default(false)
   demand_furniture demand_furniture[]
+  unique           unique[]           @relation("TreeUniqueRelation")
 }
 
 model unique {
-  id           Int     @id @default(autoincrement()) @db.UnsignedInt
-  name         String  @unique(map: "name") @db.VarChar(10)
-  status       Boolean @default(false)
-  tree_id      Int?     @db.UnsignedInt
-  color_id     Int?     @db.UnsignedInt
-  position_id  Int?     @db.UnsignedInt
-  seh_id       Int?     @db.UnsignedInt
-  furniture_id Int?     @db.UnsignedInt
-  amount       Int?     @db.UnsignedInt
-  package_quantity Int? @db.UnsignedInt
-
-  color        color?  @relation(fields: [color_id], references: [id], name: "ColorUniqueRelation")
-  tree         tree?   @relation(fields: [tree_id], references: [id], name: "TreeUniqueRelation")
-  furniture    furniture? @relation(fields: [furniture_id], references: [id])
-  vipusk       vipusk[]
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String             @unique(map: "name") @db.VarChar(10)
+  status           Boolean            @default(false)
+  tree_id          Int?               @db.UnsignedInt
+  color_id         Int?               @db.UnsignedInt
+  position_id      Int?               @db.UnsignedInt
+  seh_id           Int?               @db.UnsignedInt
+  furniture_id     Int?               @db.UnsignedInt
+  amount           Int?               @db.UnsignedInt
+  package_quantity Int?               @db.UnsignedInt
   demand_furniture demand_furniture[] @relation("UniqueDemandFurnitureRelation")
+  color            color?             @relation("ColorUniqueRelation", fields: [color_id], references: [id])
+  furniture        furniture?         @relation(fields: [furniture_id], references: [id])
+  tree             tree?              @relation("TreeUniqueRelation", fields: [tree_id], references: [id])
+  vipusk           vipusk[]
 
   @@index([color_id], map: "fk_unique_color_idx")
   @@index([tree_id], map: "fk_unique_tree_idx")
+  @@index([furniture_id], map: "unique_furniture_id_fkey")
 }
 
 model unit {
@@ -2054,6 +2045,7 @@ model user {
   is_delete   Int?      @default(0)
   seller_id   Int?      @db.UnsignedInt
   last_change DateTime? @db.Date
+  seh_id      Int?      @db.UnsignedInt
 
   @@index([role_id], map: "fk_user_role_idx")
   @@index([seller_id], map: "fk_user_seller1_idx")
@@ -2087,21 +2079,20 @@ model users {
 }
 
 model vipusk {
-  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
-  furniture_id        Int?      @db.UnsignedInt
-  unique_id           Int?      @db.UnsignedInt
-  block_id            Int?      @db.UnsignedInt
-  demand_furniture_id Int?      @db.UnsignedInt
+  id                  Int               @id @default(autoincrement()) @db.UnsignedInt
+  furniture_id        Int?              @db.UnsignedInt
+  unique_id           Int?              @db.UnsignedInt
+  block_id            Int?              @db.UnsignedInt
+  demand_furniture_id Int?              @db.UnsignedInt
   amount              Int
-  date                DateTime? @db.Date
-  description         String?   @db.Text
-  status              Boolean   @default(true)
-  created             DateTime  @default(now()) @db.Timestamp(0)
-  updated             DateTime?  
-
-  furniture           furniture?       @relation(fields: [furniture_id], references: [id])
+  date                DateTime?         @db.Date
+  description         String?           @db.Text
+  status              Boolean           @default(true)
+  created             DateTime          @default(now()) @db.Timestamp(0)
+  updated             DateTime?
   demand_furniture    demand_furniture? @relation(fields: [demand_furniture_id], references: [id])
-  unique              unique?          @relation(fields: [unique_id], references: [id])
+  furniture           furniture?        @relation(fields: [furniture_id], references: [id])
+  unique              unique?           @relation(fields: [unique_id], references: [id])
 
   @@index([demand_furniture_id], map: "fk_vipusk_demand_furniture1_idx")
   @@index([furniture_id], map: "fk_vipusk_furniture1_idx")
@@ -2170,7 +2161,7 @@ model vitrina_ostatok {
   description_sklad   String?   @db.Text
   description_magazin String?   @db.Text
   created             DateTime  @default(now()) @db.Timestamp(0)
-  updated             DateTime?  
+  updated             DateTime?
 
   @@index([magazin_id], map: "fk_ostatkaVitrina_magazin1_idx")
   @@index([furniture_id], map: "fk_ostatka_vitrina_furniture1_idx")
@@ -2187,19 +2178,19 @@ model vitrina_ostatok_end_product {
 }
 
 model vitrina_receive {
-  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
-  magazin_id          Int      @db.UnsignedInt
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id          Int       @db.UnsignedInt
   from_magazin_id     Int?
-  furniture_id        Int      @db.UnsignedInt
-  unique_id           Int?     @db.UnsignedInt
+  furniture_id        Int       @db.UnsignedInt
+  unique_id           Int?      @db.UnsignedInt
   block_id            Int?
-  amount              Decimal  @db.Decimal(20, 3)
-  date                DateTime @db.Date
+  amount              Decimal   @db.Decimal(20, 3)
+  date                DateTime  @db.Date
   received            Boolean
-  description_sklad   String?  @db.Text
-  description_magazin String?  @db.Text
-  created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime? 
+  description_sklad   String?   @db.Text
+  description_magazin String?   @db.Text
+  created             DateTime  @default(now()) @db.Timestamp(0)
+  updated             DateTime?
 
   @@index([unique_id], map: "fk_vitrina_receive_unique_1")
   @@index([furniture_id], map: "furniture_id")
@@ -2215,18 +2206,18 @@ model vitrina_receive_end_product {
 }
 
 model vitrina_vozvrat {
-  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
-  magazin_id          Int      @db.UnsignedInt
-  furniture_id        Int      @db.UnsignedInt
-  unique_id           Int?     @db.UnsignedInt
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  magazin_id          Int       @db.UnsignedInt
+  furniture_id        Int       @db.UnsignedInt
+  unique_id           Int?      @db.UnsignedInt
   block_id            Int?
-  amount              Decimal  @db.Decimal(20, 3)
-  date                DateTime @db.Date
-  received            Int      @default(0) @db.UnsignedTinyInt
-  description_magazin String?  @db.Text
-  description_sklad   String?  @db.Text
-  created             DateTime @default(now()) @db.Timestamp(0)
-  updated             DateTime? 
+  amount              Decimal   @db.Decimal(20, 3)
+  date                DateTime  @db.Date
+  received            Int       @default(0) @db.UnsignedTinyInt
+  description_magazin String?   @db.Text
+  description_sklad   String?   @db.Text
+  created             DateTime  @default(now()) @db.Timestamp(0)
+  updated             DateTime?
 
   @@index([unique_id], map: "fk_vitrina_vozvrat_unique_1")
   @@index([furniture_id], map: "fk_vozvratVitrina_furniture1_idx")
@@ -2277,16 +2268,16 @@ model vozvrat_demand_furniture_payment {
 }
 
 model vozvrat_payment {
-  id          Int      @id @default(autoincrement()) @db.UnsignedInt
-  demand_id   Int?     @db.UnsignedInt
-  payment_id  Int?     @db.UnsignedInt
-  amount      Decimal  @db.Decimal(20, 2)
-  money_id    Int      @db.UnsignedInt
-  kurs        Int?     @db.UnsignedInt
-  date        DateTime @db.Date
-  description String?  @db.Text
-  created     DateTime @default(now()) @db.Timestamp(0)
-  updated     DateTime? 
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  demand_id   Int?      @db.UnsignedInt
+  payment_id  Int?      @db.UnsignedInt
+  amount      Decimal   @db.Decimal(20, 2)
+  money_id    Int       @db.UnsignedInt
+  kurs        Int?      @db.UnsignedInt
+  date        DateTime  @db.Date
+  description String?   @db.Text
+  created     DateTime  @default(now()) @db.Timestamp(0)
+  updated     DateTime?
 
   @@index([demand_id], map: "idx-vozvrat_payment-demand_id")
   @@index([money_id], map: "idx-vozvrat_payment-money_id")
@@ -2443,6 +2434,17 @@ model working_hour {
 
   @@index([dept_id], map: "fk_working_hour_dept1_idx")
   @@index([worker_id], map: "fk_working_hour_worker1_idx")
+}
+
+model vipusk_nakladnoy {
+  id   Int      @id @default(autoincrement()) @db.UnsignedInt
+  date DateTime @db.Date
+}
+
+model vipusk_nakladnoy_unique {
+  id                  Int     @id @default(autoincrement()) @db.UnsignedInt
+  vipusk_nakladnoy_id Int?    @db.UnsignedInt
+  unique_id           Int?    @db.UnsignedInt
 }
 
 enum dept_type {
