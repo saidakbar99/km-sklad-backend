@@ -2437,14 +2437,15 @@ model working_hour {
 }
 
 model vipusk_nakladnoy {
-  id   Int      @id @default(autoincrement()) @db.UnsignedInt
-  date DateTime @db.Date
+  id     Int      @id @default(autoincrement()) @db.UnsignedInt
+  date   DateTime @db.Date
+  seh_id Int
 }
 
 model vipusk_nakladnoy_unique {
-  id                  Int     @id @default(autoincrement()) @db.UnsignedInt
-  vipusk_nakladnoy_id Int?    @db.UnsignedInt
-  unique_id           Int?    @db.UnsignedInt
+  id                  Int  @id @default(autoincrement()) @db.UnsignedInt
+  vipusk_nakladnoy_id Int? @db.UnsignedInt
+  unique_id           Int? @db.UnsignedInt
 }
 
 enum dept_type {
