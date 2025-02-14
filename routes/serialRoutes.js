@@ -17,7 +17,10 @@ import {
   getLastInvoiceNumber,
   createInvoice,
   getUserSeh,
-  getInvoices
+  getInvoices,
+  deleteInvoice,
+  updateInvoice,
+  getOneInvoice,
 } from '../controllers/serialController.js';
 
 const router = express.Router();
@@ -43,7 +46,10 @@ router.post('/supermarket-generation', createSupermarketSerial)
 router.post('/serials', getSerials)
 
 //Nakladnoy
+router.get('/invoice/:id', getOneInvoice)
 router.post('/invoice', getInvoices)
+router.delete('/invoice', deleteInvoice)
+router.put('/invoice', updateInvoice)
 router.post('/invoice-creation', createInvoice)
 router.get('/last-invoice', getLastInvoiceNumber)
 router.post('/seh', getUserSeh)

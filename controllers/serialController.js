@@ -17,6 +17,7 @@ export const demand = async (req, res) => {
     res.json({ demands });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
@@ -28,6 +29,7 @@ export const demandFurniture = async (req, res) => {
     res.json({ furnitures });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -39,6 +41,7 @@ export const furniture = async (req, res) => {
     res.json({ furniture });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -50,6 +53,7 @@ export const categoryFurniture = async (req, res) => {
     res.json({ category });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -63,6 +67,7 @@ export const setFurniture = async (req, res) => {
     res.json({ set });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -77,6 +82,7 @@ export const unique = async (req, res) => {
     res.json({ message: 'Package quantity updated' });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -98,6 +104,7 @@ export const vipusk = async (req, res) => {
     res.json({ message: 'Serial generated' });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -117,37 +124,60 @@ export const getSerials = async (req, res) => {
       take: 50,
       include: {
         furniture: {
-          include: {
-            category_furniture: true,
+          select: {
+            name: true,
+            category_furniture: {
+              select: {
+                name: true
+              }
+            },
             komplekt_furniture: {
-              include: {
-                komplekt: true
+              select: {
+                komplekt: {
+                  select: {
+                    name: true
+                  }
+                }
               }
             }
           }
         },
         unique: {
-          include: {
-            color: true
+          select: {
+            name: true,
+            color: {
+              select: {
+                name: true
+              }
+            }
           }
         },
         demand_furniture: {
-          include: {
+          select: {
             demand: {
-              include: {
-                customer: true
+              select: {
+                doc_no: true,
+                customer: {
+                  select: {
+                    name: true
+                  }
+                }
               }
             },
-            furniture: true,
-            color: true
+            color: {
+              select: {
+                name: true
+              }
+            }
           }
         },
       }
     })
-
+    
     res.json({ serials })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -161,6 +191,7 @@ export const getAllFurnitureCategories = async (req, res) => {
     res.json({ categories })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -176,6 +207,7 @@ export const getFurnitureSets = async (req, res) => {
     res.json({ sets })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -198,6 +230,7 @@ export const getFurnitures = async (req, res) => {
     res.json({ furnitures });
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -211,6 +244,7 @@ export const getColors = async (req, res) => {
     res.json({colors})
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -220,6 +254,7 @@ export const getTrees = async (req, res) => {
     res.json({ trees })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -245,6 +280,7 @@ const generateUniqueSPName = async () => {
     return `SP${nextNumber.toString().padStart(currentPadding, "0")}`;
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
@@ -286,6 +322,7 @@ export const createSupermarketSerial = async (req, res) => {
     res.json({ message: 'Serial generated'})
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -299,13 +336,13 @@ export const getLastInvoiceNumber = async (req, res) => {
     res.json({ lastInvoiceId })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
 export const createInvoice = async (req, res) => {
   try {
     const {
-      invoiceNumber,
       sehId,
       date,
       uniqueIds
@@ -313,7 +350,6 @@ export const createInvoice = async (req, res) => {
 
     const nakladnoy = await prisma.vipusk_nakladnoy.create({
       data: {
-        id: invoiceNumber,
         date: date,
         seh_id: sehId
       }
@@ -330,6 +366,7 @@ export const createInvoice = async (req, res) => {
     res.json({ message: 'Vipusk nakladnoy created'})
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -345,6 +382,7 @@ export const getUserSeh = async (req, res) => {
     res.json({ seh })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -360,5 +398,96 @@ export const getInvoices = async (req, res) => {
     res.json({ invoices })
   } catch (error) {
     console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export const deleteInvoice = async (req, res) => {
+  try {
+    const { invoiceId } = req.body
+
+    await prisma.vipusk_nakladnoy_unique.deleteMany({
+      where: {
+        vipusk_nakladnoy_id: invoiceId
+      }
+    })
+
+    await prisma.vipusk_nakladnoy.delete({
+      where: {
+        id: invoiceId
+      }
+    })
+
+    res.json({ message: 'Invoice deleted' })
+  } catch (error) {
+    console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export const updateInvoice = async (req, res) => {
+  try {
+    const { invoiceId, sehId, date, uniqueIds } = req.body;
+
+    const updatedInvoice = await prisma.vipusk_nakladnoy.update({
+      where: { id: invoiceId },
+      data: {
+        date: date,
+        seh_id: sehId
+      }
+    });
+
+    await prisma.vipusk_nakladnoy_unique.deleteMany({
+      where: { vipusk_nakladnoy_id: invoiceId }
+    });
+
+    await prisma.vipusk_nakladnoy_unique.createMany({
+      data: uniqueIds.map((unique_id) => ({
+        unique_id,
+        vipusk_nakladnoy_id: invoiceId,
+      })),
+    });
+
+    res.json({ message: 'Vipusk nakladnoy updated' });
+  } catch (error) {
+    console.error('Server error: ', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+export const getOneInvoice = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const invoice = await prisma.vipusk_nakladnoy.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    const uniqueIds = await prisma.vipusk_nakladnoy_unique.findMany({
+      where: {
+        vipusk_nakladnoy_id: parseInt(id)
+      }
+    })
+
+    const ids = uniqueIds.map(item => item.unique_id)
+
+    const uniques = await prisma.unique.findMany({
+      where: {
+        id: { in: ids },
+      }
+    })
+
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    res.json({
+      id: invoice.id,
+      date: invoice.date,
+      uniques: uniques,
+    });
+  } catch (error) {
+    console.error("Error fetching invoice: ", error);
+    res.status(500).json({ error: "Failed to fetch invoice" });
   }
 }

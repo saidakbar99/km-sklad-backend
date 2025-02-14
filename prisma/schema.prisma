@@ -2101,6 +2101,8 @@ model vipusk {
   furniture           furniture?        @relation(fields: [furniture_id], references: [id])
   unique              unique?           @relation(fields: [unique_id], references: [id])
 
+  @@index([seh_id])
+  @@index([date])
   @@index([demand_furniture_id], map: "fk_vipusk_demand_furniture1_idx")
   @@index([furniture_id], map: "fk_vipusk_furniture1_idx")
   @@index([unique_id], map: "fk_vipusk_unique_1")
