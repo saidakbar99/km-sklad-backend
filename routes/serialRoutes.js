@@ -21,6 +21,7 @@ import {
   deleteInvoice,
   updateInvoice,
   getOneInvoice,
+  getAllUniquesOfInvoice
 } from '../controllers/serialController.js';
 
 const router = express.Router();
@@ -45,7 +46,8 @@ router.post('/supermarket-generation', createSupermarketSerial)
 // Serials
 router.post('/serials', getSerials)
 
-//Nakladnoy
+//Nakladnoy 
+router.get('/invoice', getAllUniquesOfInvoice)
 router.get('/invoice/:id', getOneInvoice)
 router.post('/invoice', getInvoices)
 router.delete('/invoice', deleteInvoice)

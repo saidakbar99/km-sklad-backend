@@ -491,3 +491,20 @@ export const getOneInvoice = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch invoice" });
   }
 }
+
+export const getAllUniquesOfInvoice = async (req, res) => {
+  try {
+    const uniques = await prisma.vipusk_nakladnoy_unique.findMany({
+      select: {
+        unique_id: true
+      }
+    })
+
+    const uniqueIds = uniques.map(item => item.unique_id)
+
+    res.json({ uniques: uniqueIds });
+  } catch (error) {
+    console.error("Error fetching invoice: ", error);
+    res.status(500).json({ error: "Failed to fetch invoice" });
+  }
+}
