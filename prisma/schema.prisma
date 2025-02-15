@@ -2449,12 +2449,16 @@ model vipusk_nakladnoy {
   id     Int      @id @default(autoincrement()) @db.UnsignedInt
   date   DateTime @db.Date
   seh_id Int?     @db.UnsignedInt
+
+  unique_entries vipusk_nakladnoy_unique[] @relation("VipuskNakladnoyToUnique")
 }
 
 model vipusk_nakladnoy_unique {
   id                  Int  @id @default(autoincrement()) @db.UnsignedInt
   vipusk_nakladnoy_id Int? @db.UnsignedInt
   unique_id           Int? @db.UnsignedInt
+
+  vipusk_nakladnoy vipusk_nakladnoy? @relation("VipuskNakladnoyToUnique", fields: [vipusk_nakladnoy_id], references: [id], onDelete: SetNull)
 }
 
 enum dept_type {

@@ -390,12 +390,48 @@ export const getInvoices = async (req, res) => {
   try {
     const { sehId } = req.body
     const invoices = await prisma.vipusk_nakladnoy.findMany({
-      where: {
-        seh_id: sehId
-      }
+      where: { seh_id: sehId },
+      include: { unique_entries: true }
     })
 
-    res.json({ invoices })
+    const invoicesWithDemands = await Promise.all(
+      invoices.map(async (invoice) => {
+        const uniqueIds = invoice.unique_entries.map(entry => entry.unique_id).filter(id => id !== null);
+
+        if (uniqueIds.length === 0) {
+          return { id: invoice.id, date: invoice.date, seh_id: invoice.seh_id, demands: ["Supermarket"] };
+        }
+
+        const demandFurniture = await prisma.demand_furniture.findMany({
+          where: { unique_id: { in: uniqueIds } },
+          select: { demand_id: true, unique_id: true }
+        });
+
+        const foundUniqueIds = demandFurniture.map(df => df.unique_id);
+        const notFoundUniqueIds = uniqueIds.filter(id => !foundUniqueIds.includes(id));
+
+        const demandIds = demandFurniture.map(df => df.demand_id).filter(id => id !== null);
+
+        let demands = []
+
+        if (demandIds.length > 0) {
+          const fetchedDemands = await prisma.demand.findMany({
+            where: { id: { in: demandIds } },
+            select: { doc_no: true }
+          });
+
+          demands = fetchedDemands.map(d => d.doc_no);
+        }
+
+        if (notFoundUniqueIds.length > 0) {
+          demands.push("Supermarket");
+        }
+
+        return { id: invoice.id, date: invoice.date, seh_id: invoice.seh_id, demands: demands.length > 0 ? demands : ["Supermarket"] };
+      })
+    );
+
+    res.json({ invoices: invoicesWithDemands })
   } catch (error) {
     console.log('Server error: ', error)
     res.status(500).json({ error: 'Server error' });
