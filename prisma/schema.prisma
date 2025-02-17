@@ -1579,6 +1579,8 @@ model reserve_furniture {
 model role {
   id   Int     @id @default(autoincrement()) @db.UnsignedInt
   name String? @db.VarChar(45)
+
+  user user[]
 }
 
 model role_has_permissions {
@@ -1701,6 +1703,8 @@ model seh {
   handle      Boolean? @default(false)
   mechanism   Boolean? @default(false)
   material    Boolean  @default(false)
+
+  vipusk_nakladnoy vipusk_nakladnoy[] @relation("SehToVipuskNakladnoy")
 
   @@index([category_id], map: "fk-seh-category_id")
 }
@@ -2051,6 +2055,8 @@ model user {
   seller_id   Int?      @db.UnsignedInt
   last_change DateTime? @db.Date
   seh_id      Int?      @db.UnsignedInt
+
+  role        role?     @relation(fields: [role_id], references: [id])
 
   @@index([role_id], map: "fk_user_role_idx")
   @@index([seller_id], map: "fk_user_seller1_idx")
@@ -2446,17 +2452,20 @@ model working_hour {
 }
 
 model vipusk_nakladnoy {
-  id     Int      @id @default(autoincrement()) @db.UnsignedInt
-  date   DateTime @db.Date
-  seh_id Int?     @db.UnsignedInt
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  date      DateTime @db.Date
+  seh_id    Int?     @db.UnsignedInt
+  recieved  Boolean  @default(false)
 
+  seh    seh?     @relation("SehToVipuskNakladnoy", fields: [seh_id], references: [id])
   unique_entries vipusk_nakladnoy_unique[] @relation("VipuskNakladnoyToUnique")
 }
 
 model vipusk_nakladnoy_unique {
-  id                  Int  @id @default(autoincrement()) @db.UnsignedInt
-  vipusk_nakladnoy_id Int? @db.UnsignedInt
-  unique_id           Int? @db.UnsignedInt
+  id                  Int      @id @default(autoincrement()) @db.UnsignedInt
+  vipusk_nakladnoy_id Int?     @db.UnsignedInt
+  unique_id           Int?     @db.UnsignedInt
+  recieved            Boolean  @default(false)
 
   vipusk_nakladnoy vipusk_nakladnoy? @relation("VipuskNakladnoyToUnique", fields: [vipusk_nakladnoy_id], references: [id], onDelete: SetNull)
 }

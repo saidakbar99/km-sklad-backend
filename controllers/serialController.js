@@ -388,18 +388,27 @@ export const getUserSeh = async (req, res) => {
 
 export const getInvoices = async (req, res) => {
   try {
-    const { sehId } = req.body
+    const { seh_id } = req.query;
+
+    const whereCondition = {
+      ...(seh_id ? { seh_id: Number(seh_id) } : {}),
+      recieved: false
+    }
+
     const invoices = await prisma.vipusk_nakladnoy.findMany({
-      where: { seh_id: sehId },
-      include: { unique_entries: true }
-    })
+      where: whereCondition,
+      include: { 
+        unique_entries: true,
+        seh: true
+      }
+    });
 
     const invoicesWithDemands = await Promise.all(
       invoices.map(async (invoice) => {
         const uniqueIds = invoice.unique_entries.map(entry => entry.unique_id).filter(id => id !== null);
 
         if (uniqueIds.length === 0) {
-          return { id: invoice.id, date: invoice.date, seh_id: invoice.seh_id, demands: ["Supermarket"] };
+          return { id: invoice.id, date: invoice.date, seh_id: invoice.seh_id, seh: invoice.seh.name, demands: ["Supermarket"] };
         }
 
         const demandFurniture = await prisma.demand_furniture.findMany({
@@ -412,7 +421,7 @@ export const getInvoices = async (req, res) => {
 
         const demandIds = demandFurniture.map(df => df.demand_id).filter(id => id !== null);
 
-        let demands = []
+        let demands = [];
 
         if (demandIds.length > 0) {
           const fetchedDemands = await prisma.demand.findMany({
@@ -427,16 +436,21 @@ export const getInvoices = async (req, res) => {
           demands.push("Supermarket");
         }
 
-        return { id: invoice.id, date: invoice.date, seh_id: invoice.seh_id, demands: demands.length > 0 ? demands : ["Supermarket"] };
+        return { 
+          id: invoice.id, 
+          date: invoice.date, 
+          seh_id: invoice.seh_id, 
+          seh: invoice.seh.name,
+          demands: demands.length > 0 ? demands : ["Supermarket"] };
       })
     );
 
-    res.json({ invoices: invoicesWithDemands })
+    res.json({ invoices: invoicesWithDemands });
   } catch (error) {
-    console.log('Server error: ', error)
+    console.error('Server error:', error);
     res.status(500).json({ error: 'Server error' });
   }
-}
+};
 
 export const deleteInvoice = async (req, res) => {
   try {
@@ -497,6 +511,13 @@ export const getOneInvoice = async (req, res) => {
 
     const invoice = await prisma.vipusk_nakladnoy.findUnique({
       where: { id: parseInt(id) },
+      include: {
+        seh: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
 
     const uniqueIds = await prisma.vipusk_nakladnoy_unique.findMany({
@@ -520,6 +541,8 @@ export const getOneInvoice = async (req, res) => {
     res.json({
       id: invoice.id,
       date: invoice.date,
+      seh: invoice.seh.name,
+      seh_id: invoice.seh_id,
       uniques: uniques,
     });
   } catch (error) {
@@ -539,6 +562,27 @@ export const getAllUniquesOfInvoice = async (req, res) => {
     const uniqueIds = uniques.map(item => item.unique_id)
 
     res.json({ uniques: uniqueIds });
+  } catch (error) {
+    console.error("Error fetching invoice: ", error);
+    res.status(500).json({ error: "Failed to fetch invoice" });
+  }
+}
+
+export const recieveInvoice = async (req, res) => {
+  try {
+    const { invoiceIds } = req.body
+
+    await prisma.vipusk_nakladnoy.updateMany({
+      where: { id: { in: invoiceIds } },
+      data: { recieved: true }
+    });
+
+    await prisma.vipusk_nakladnoy_unique.updateMany({
+      where: { vipusk_nakladnoy_id: { in: invoiceIds } },
+      data: { recieved: true }
+    });
+
+    res.json({ message: 'Invoice recieved' });
   } catch (error) {
     console.error("Error fetching invoice: ", error);
     res.status(500).json({ error: "Failed to fetch invoice" });

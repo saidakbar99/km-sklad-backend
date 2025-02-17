@@ -29,19 +29,48 @@ const prisma = new PrismaClient();
 // };
 
 export const login = async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
+    const user = await prisma.user.findFirst({
+      where: { username },
+      include: {
+        role: true
+      }
+    });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
-  const user = await prisma.user.findFirst({ where: { username } });
-  if (!user) {
-    return res.status(400).json({ message: 'Invalid credentials' });
+    const isMatch = bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const token = generateToken(user.id, user.role);
+
+    res.json({ token, user, message: 'Login successful' });
+  } catch (error) {
+    console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
   }
-
-  const isMatch = bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: 'Invalid credentials' });
-  }
-
-  const token = generateToken(user.id, user.role);
-
-  res.json({ token, user, message: 'Login successful' });
 };
+
+export const getInvoiceUsers = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const users = await prisma.user.findMany({
+      where: { 
+        role_id: 22,
+        username: {
+          contains: search,
+        },
+      } 
+    })
+
+    res.json({ users })
+  } catch (error) {
+    console.log('Server error: ', error)
+    res.status(500).json({ error: 'Server error' });
+  }
+}
