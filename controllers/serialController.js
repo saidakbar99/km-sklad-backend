@@ -522,7 +522,8 @@ export const getOneInvoice = async (req, res) => {
 
     const uniqueIds = await prisma.vipusk_nakladnoy_unique.findMany({
       where: {
-        vipusk_nakladnoy_id: parseInt(id)
+        vipusk_nakladnoy_id: parseInt(id),
+        recieved: false
       }
     })
 
@@ -570,16 +571,28 @@ export const getAllUniquesOfInvoice = async (req, res) => {
 
 export const recieveInvoice = async (req, res) => {
   try {
-    const { invoiceIds } = req.body
+    const { invoiceId, invoiceUniqueIds } = req.body
+    const invoiceNumber = Number(invoiceId)
 
-    await prisma.vipusk_nakladnoy.updateMany({
-      where: { id: { in: invoiceIds } },
+    await prisma.vipusk_nakladnoy_unique.updateMany({
+      where: { 
+        vipusk_nakladnoy_id: invoiceNumber,
+        unique_id: { in: invoiceUniqueIds }
+      },
       data: { recieved: true }
     });
 
-    await prisma.vipusk_nakladnoy_unique.updateMany({
-      where: { vipusk_nakladnoy_id: { in: invoiceIds } },
-      data: { recieved: true }
+    const totalUniqueCount = await prisma.vipusk_nakladnoy_unique.count({
+      where: { vipusk_nakladnoy_id: invoiceNumber }
+    });
+
+    const receivedUniqueCount = await prisma.vipusk_nakladnoy_unique.count({
+      where: { vipusk_nakladnoy_id: invoiceNumber, recieved: true }
+    });
+
+    await prisma.vipusk_nakladnoy.update({
+      where: { id: invoiceNumber },
+      data: { recieved: totalUniqueCount === receivedUniqueCount }
     });
 
     res.json({ message: 'Invoice recieved' });
