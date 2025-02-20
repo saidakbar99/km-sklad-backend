@@ -606,7 +606,7 @@ export const getInvoiceHistories = async (req, res) => {
   try {
     const { seh_id, date } = req.query;
 
-    const dt = DateTime.fromISO(date);
+    const dt = DateTime.fromISO(date, { zone: "utc" });
     const startOfMonth = dt.startOf("month").toISO();
     const endOfMonth = dt.endOf("month").toISO();
 
