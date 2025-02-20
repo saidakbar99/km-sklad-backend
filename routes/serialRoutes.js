@@ -23,6 +23,7 @@ import {
   getOneInvoice,
   getAllUniquesOfInvoice,
   recieveInvoice,
+  getInvoiceHistories
 } from '../controllers/serialController.js';
 
 const router = express.Router();
@@ -49,6 +50,7 @@ router.post('/serials', getSerials)
 
 //Nakladnoy 
 router.get('/invoice', getInvoices)
+router.get('/invoice-history', getInvoiceHistories)
 router.get('/invoice-uniques', getAllUniquesOfInvoice)
 router.get('/invoice/:id', getOneInvoice)
 router.delete('/invoice', deleteInvoice)
