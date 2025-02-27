@@ -1997,7 +1997,7 @@ model unique {
   furniture_id     Int?               @db.UnsignedInt
   amount           Int?               @db.UnsignedInt
   package_quantity Int?               @db.UnsignedInt
-  block_id         Int?               @db.UnsignedInt
+  block_id         Int?
 
   block            block?             @relation(fields: [block_id], references: [id])
   demand_furniture demand_furniture[] @relation("UniqueDemandFurnitureRelation")
