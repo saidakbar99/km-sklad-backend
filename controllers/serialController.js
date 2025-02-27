@@ -146,6 +146,7 @@ export const getSerials = async (req, res) => {
         unique: {
           select: {
             name: true,
+            package_quantity: true,
             color: {
               select: {
                 name: true
@@ -571,7 +572,7 @@ export const getAllUniquesOfInvoice = async (req, res) => {
 
 export const recieveInvoice = async (req, res) => {
   try {
-    const { invoiceId, invoiceUniqueIds } = req.body
+    const { invoiceId, invoiceUniqueIds, blockId } = req.body
     const invoiceNumber = Number(invoiceId)
 
     await prisma.vipusk_nakladnoy_unique.updateMany({
@@ -594,6 +595,11 @@ export const recieveInvoice = async (req, res) => {
       where: { id: invoiceNumber },
       data: { recieved: totalUniqueCount === receivedUniqueCount }
     });
+
+    await prisma.unique.updateMany({
+      where: { id: { in: invoiceUniqueIds } },
+      data: { block_id: blockId }
+    })
 
     res.json({ message: 'Invoice recieved' });
   } catch (error) {
@@ -675,3 +681,110 @@ export const getInvoiceHistories = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const getAllStorage = async (req, res) => {
+  try {
+    const uniques = await prisma.vipusk_nakladnoy_unique.findMany({
+      where: {
+        recieved: true
+      },
+      select: {
+        unique_id: true
+      }
+    });
+
+    const uniqueIds = uniques.map((item) => item.unique_id)
+
+    const serials = await prisma.vipusk.findMany({ 
+      where: {
+        unique_id: { in: uniqueIds}
+      },
+      orderBy: {
+        id: 'desc'
+      },
+      include: {
+        furniture: {
+          select: {
+            name: true,
+            category_furniture: {
+              select: {
+                name: true
+              }
+            },
+            komplekt_furniture: {
+              select: {
+                komplekt: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        unique: {
+          select: {
+            name: true,
+            color: {
+              select: {
+                name: true
+              }
+            },
+            block: true
+          },
+
+        },
+        demand_furniture: {
+          select: {
+            demand: {
+              select: {
+                doc_no: true,
+                customer: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            },
+            color: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+      }
+    })
+
+    res.json({ uniques: serials });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export const getStorageBlocks = async (req, res) => {
+  try {
+    const blocks = await prisma.block.findMany();
+
+    res.json({ blocks });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export const updateStorageBlocks = async (req, res) => {
+  try {
+    const { blockId, uniqueId } = req.body;
+    await prisma.unique.update({
+      where: { id: uniqueId },
+      data: { block_id: blockId }
+    })
+
+    res.json({ message: 'Unique updated' });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}

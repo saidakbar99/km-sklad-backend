@@ -103,6 +103,8 @@ model block {
   name      String  @db.VarChar(30)
   is_active Boolean @default(false)
   sort      Int     @default(1000)
+
+  unique unique[]
 }
 
 model bron_unique {
@@ -1995,7 +1997,9 @@ model unique {
   furniture_id     Int?               @db.UnsignedInt
   amount           Int?               @db.UnsignedInt
   package_quantity Int?               @db.UnsignedInt
+  block_id         Int?               @db.UnsignedInt
 
+  block            block?             @relation(fields: [block_id], references: [id])
   demand_furniture demand_furniture[] @relation("UniqueDemandFurnitureRelation")
   color            color?             @relation("ColorUniqueRelation", fields: [color_id], references: [id])
   furniture        furniture?         @relation(fields: [furniture_id], references: [id])

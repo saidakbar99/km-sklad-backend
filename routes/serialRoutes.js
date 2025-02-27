@@ -23,7 +23,10 @@ import {
   getOneInvoice,
   getAllUniquesOfInvoice,
   recieveInvoice,
-  getInvoiceHistories
+  getInvoiceHistories,
+  getAllStorage,
+  getStorageBlocks,
+  updateStorageBlocks
 } from '../controllers/serialController.js';
 
 const router = express.Router();
@@ -61,5 +64,8 @@ router.post('/seh', getUserSeh)
 
 //Sklad
 router.post('/invoice-recieve', recieveInvoice)
+router.get('/storage', getAllStorage)
+router.get('/storage-blocks', getStorageBlocks)
+router.put('/storage-blocks', updateStorageBlocks)
 
 export default router;
