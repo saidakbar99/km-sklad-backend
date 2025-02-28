@@ -28,6 +28,7 @@ import {
   getStorageBlocks,
   updateStorageBlocks
 } from '../controllers/serialController.js';
+import { login, getInvoiceUsers } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -67,5 +68,9 @@ router.post('/invoice-recieve', recieveInvoice)
 router.get('/storage', getAllStorage)
 router.get('/storage-blocks', getStorageBlocks)
 router.put('/storage-blocks', updateStorageBlocks)
+
+//Auth
+router.post('/login', login);
+router.get('/users', getInvoiceUsers);
 
 export default router;

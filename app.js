@@ -19,7 +19,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-app.use('/auth', authRoutes);
 app.use('/api', serialRoutes);
 
 const startServer = async () => {
