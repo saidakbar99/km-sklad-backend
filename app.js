@@ -2,7 +2,6 @@ import 'dotenv/config'
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import authRoutes from './routes/authRoutes.js';
 import serialRoutes from './routes/serialRoutes.js';
 import { PrismaClient } from '@prisma/client';
 
@@ -12,7 +11,7 @@ const prisma = new PrismaClient();
 // Middleware
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(cors({ 
-  origin: ['https://km-sklad.netlify.app', 'http://localhost:3000'], 
+  origin: ['https://km-sklad.netlify.app','https://gotoviy.kmapp.uz', 'http://localhost:3000'], 
   credentials: true 
 }));
 app.use(express.json());
