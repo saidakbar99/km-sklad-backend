@@ -26,9 +26,10 @@ import {
   getInvoiceHistories,
   getAllStorage,
   getStorageBlocks,
-  updateStorageBlocks
+  updateStorageBlocks,
+  login,
+  getInvoiceUsers
 } from '../controllers/serialController.js';
-import { login, getInvoiceUsers } from '../controllers/authController.js';
 
 const router = express.Router();
 
