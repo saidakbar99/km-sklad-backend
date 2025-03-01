@@ -197,7 +197,6 @@ export const getSerials = async (req, res) => {
       orderBy: {
         id: 'desc'
       },
-      take: 50,
       include: {
         furniture: {
           select: {
