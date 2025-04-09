@@ -165,10 +165,13 @@ export const unique = async (req, res) => {
 
 export const vipusk = async (req, res) => {
   try {
-    const { furnitureId, uniqueId, amount, date, demandFurnitureId, sehId } = req.body
+    const { furnitureId, uniqueId, amount, date, demandFurnitureId, sehId, glass_quantity, glass_wood_quantity, lxdf_quantity} = req.body
 
     await prisma.vipusk.create({
       data: {
+        glass_quantity, 
+        glass_wood_quantity,
+        lxdf_quantity,
         furniture_id: furnitureId,
         unique_id: uniqueId,
         demand_furniture_id: demandFurnitureId,
@@ -363,7 +366,11 @@ const generateUniqueSPName = async () => {
 
 export const createSupermarketSerial = async (req, res) => {
   try {
-    const { 
+    const {
+      marketPackage,
+      glass_quantity, 
+      glass_wood_quantity,
+      lxdf_quantity,
       treeId, 
       colorId, 
       positionId, 
@@ -381,7 +388,8 @@ export const createSupermarketSerial = async (req, res) => {
         color_id: colorId,
         position_id: positionId,
         furniture_id: furnitureId,
-        amount: amount
+        amount: amount,
+        package_quantity: marketPackage
       }
     })
 
@@ -392,7 +400,10 @@ export const createSupermarketSerial = async (req, res) => {
         demand_furniture_id: null,
         amount: amount,
         date: date,
-        seh_id: sehId
+        seh_id: sehId,
+        glass_quantity,
+        glass_wood_quantity,
+        lxdf_quantity
       }
     })
 

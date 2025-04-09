@@ -2107,6 +2107,10 @@ model vipusk {
   created             DateTime          @default(now()) @db.Timestamp(0)
   updated             DateTime?
 
+  glass_quantity        String?           @db.VarChar(255)
+  glass_wood_quantity   String?           @db.VarChar(255)
+  lxdf_quantity         String?           @db.VarChar(255)
+
   demand_furniture    demand_furniture? @relation(fields: [demand_furniture_id], references: [id])
   furniture           furniture?        @relation(fields: [furniture_id], references: [id])
   unique              unique?           @relation(fields: [unique_id], references: [id])
